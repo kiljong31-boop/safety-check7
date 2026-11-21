@@ -265,9 +265,9 @@
     /* PDF 출력용 숨김 영역 */
     #pdfReport {
       position: fixed; left: -9999px; top: 0;
-      width: 794px; padding: 36px 40px; background: #fff; color: #000;
+      width: 794px; padding: 28px 36px; background: #fff; color: #000;
     }
-    #pdfReport h2 { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 14px; }
+    #pdfHeaderArea h2 { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin: 0 0 12px; }
     .pdf-info-box {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -275,7 +275,7 @@
       background: #f1f5f9;
       border: 1px solid #333;
       padding: 10px 14px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       font-size: 13.5px;
       font-weight: bold;
     }
@@ -283,7 +283,7 @@
       border: 1.5px solid #333;
       border-radius: 6px;
       padding: 12px 14px;
-      margin-bottom: 18px;
+      margin-bottom: 14px;
       background: #fff;
     }
     .pdf-booth-header {
@@ -297,32 +297,32 @@
       font-weight: bold;
       margin-bottom: 10px;
     }
-    #pdfReport table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 13px; }
-    #pdfReport th, #pdfReport td { border: 1px solid #333; padding: 7px 10px; text-align: left; }
-    #pdfReport th { background: #f1f5f9; text-align: center; }
-    #pdfReport td.ans { text-align: center; font-weight: bold; width: 60px; }
+    .pdf-booth-section table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 12.5px; }
+    .pdf-booth-section th, .pdf-booth-section td { border: 1px solid #333; padding: 6px 9px; text-align: left; }
+    .pdf-booth-section th { background: #f1f5f9; text-align: center; }
+    .pdf-booth-section td.ans { text-align: center; font-weight: bold; width: 56px; }
 
     .pdf-memo-box {
       border: 1px solid #333;
-      padding: 9px 12px;
+      padding: 8px 11px;
       margin-bottom: 10px;
-      font-size: 13px;
+      font-size: 12.5px;
       background: #fafafa;
       white-space: pre-wrap;
-      line-height: 1.5;
+      line-height: 1.45;
     }
-    .pdf-photo-area { margin-top: 8px; }
+    .pdf-photo-area { margin-top: 6px; }
     .pdf-q-photo-block {
       border: 1px solid #cbd5e1;
       border-radius: 6px;
-      padding: 8px 10px;
-      margin-bottom: 8px;
+      padding: 7px 9px;
+      margin-bottom: 7px;
       background: #fff;
     }
     .pdf-q-photo-title {
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: bold;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       color: #0f172a;
     }
     .pdf-q-photo-grid {
@@ -332,7 +332,7 @@
     }
     .pdf-q-photo-grid img {
       width: 100%;
-      height: 105px;
+      height: 95px;
       object-fit: cover;
       border: 1px solid #ccc;
       border-radius: 4px;
@@ -592,12 +592,14 @@
 
 <!-- PDF 변환용 템플릿 (업체별 다중 가판 보고서) -->
 <div id="pdfReport">
-  <h2>일일 안전 점검 결과 보고서</h2>
-  <div class="pdf-info-box">
-    <span>점검 업체: <span id="pdfCompany">-</span></span>
-    <span>점검 가판 수: <span id="pdfBoothCount">0개</span></span>
-    <span>점검자 성명: <span id="pdfInspector">-</span></span>
-    <span>점검 일시: <span id="pdfDate">-</span></span>
+  <div id="pdfHeaderArea">
+    <h2>일일 안전 점검 결과 보고서</h2>
+    <div class="pdf-info-box">
+      <span>점검 업체: <span id="pdfCompany">-</span></span>
+      <span>점검 가판 수: <span id="pdfBoothCount">0개</span></span>
+      <span>점검자 성명: <span id="pdfInspector">-</span></span>
+      <span>점검 일시: <span id="pdfDate">-</span></span>
+    </div>
   </div>
   <div id="pdfBoothsContainer"></div>
 </div>
@@ -1158,138 +1160,133 @@
     return String(str || "").trim().replace(/[\\/:*?"<>|]/g, "_");
   }
 
-  function buildCompanyPdfDom(companyName, boothList, dateStr) {
-    document.getElementById("pdfCompany").textContent = companyName;
-    document.getElementById("pdfBoothCount").textContent = boothList.length + "개";
-    document.getElementById("pdfInspector").textContent = INSPECTOR_NAME;
-    document.getElementById("pdfDate").textContent = dateStr;
+  function createSingleBoothSectionEl(rec, bIdx) {
+    const section = document.createElement("div");
+    section.className = "pdf-booth-section";
 
-    const boothsContainer = document.getElementById("pdfBoothsContainer");
-    boothsContainer.innerHTML = "";
+    const header = document.createElement("div");
+    header.className = "pdf-booth-header";
+    header.innerHTML =
+      "<span>가판 " + (bIdx + 1) + ". " + escapeHtml(rec.booth) + "</span>" +
+      "<span>점검자: " + escapeHtml(INSPECTOR_NAME) + "</span>";
+    section.appendChild(header);
 
-    boothList.forEach((rec, bIdx) => {
-      const section = document.createElement("div");
-      section.className = "pdf-booth-section";
+    const table = document.createElement("table");
+    table.innerHTML =
+      "<thead><tr><th style='width:50px;'>번호</th><th>점검 항목</th><th style='width:70px;'>결과</th></tr></thead><tbody></tbody>";
+    const tbody = table.querySelector("tbody");
 
-      const header = document.createElement("div");
-      header.className = "pdf-booth-header";
-      header.innerHTML =
-        "<span>가판 " + (bIdx + 1) + ". " + escapeHtml(rec.booth) + "</span>" +
-        "<span>점검자: " + escapeHtml(INSPECTOR_NAME) + "</span>";
-      section.appendChild(header);
+    let hasAnyPhoto = false;
+    const photoBlocks = [];
 
-      const table = document.createElement("table");
-      table.innerHTML =
-        "<thead><tr><th style='width:50px;'>번호</th><th>점검 항목</th><th style='width:70px;'>결과</th></tr></thead><tbody></tbody>";
-      const tbody = table.querySelector("tbody");
+    rec.questionTexts.forEach((cleanText, qIdx) => {
+      const ans = rec.answers[qIdx];
+      const ansColor = ans === "O" ? "#2563eb" : "#dc2626";
 
-      let hasAnyPhoto = false;
-      const photoBlocks = [];
+      const tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td style='text-align:center;'>" + (qIdx + 1) + "</td>" +
+        "<td>" + escapeHtml(cleanText) + "</td>" +
+        "<td class='ans' style='color:" + ansColor + "'>" + escapeHtml(ans) + "</td>";
+      tbody.appendChild(tr);
 
-      rec.questionTexts.forEach((cleanText, qIdx) => {
-        const ans = rec.answers[qIdx];
-        const ansColor = ans === "O" ? "#2563eb" : "#dc2626";
+      const photos = rec.photos[qIdx] || [];
+      if (photos.length > 0) {
+        hasAnyPhoto = true;
+        const block = document.createElement("div");
+        block.className = "pdf-q-photo-block";
 
-        const tr = document.createElement("tr");
-        tr.innerHTML =
-          "<td style='text-align:center;'>" + (qIdx + 1) + "</td>" +
-          "<td>" + escapeHtml(cleanText) + "</td>" +
-          "<td class='ans' style='color:" + ansColor + "'>" + escapeHtml(ans) + "</td>";
-        tbody.appendChild(tr);
+        const title = document.createElement("div");
+        title.className = "pdf-q-photo-title";
+        title.textContent = (qIdx + 1) + ". " + cleanText + " (" + photos.length + "장)";
 
-        const photos = rec.photos[qIdx] || [];
-        if (photos.length > 0) {
-          hasAnyPhoto = true;
-          const block = document.createElement("div");
-          block.className = "pdf-q-photo-block";
+        const grid = document.createElement("div");
+        grid.className = "pdf-q-photo-grid";
 
-          const title = document.createElement("div");
-          title.className = "pdf-q-photo-title";
-          title.textContent = (qIdx + 1) + ". " + cleanText + " (" + photos.length + "장)";
+        photos.forEach((dataUrl, pIdx) => {
+          const img = document.createElement("img");
+          img.src = dataUrl;
+          img.alt = rec.booth + " " + (qIdx + 1) + "번 사진 " + (pIdx + 1);
+          grid.appendChild(img);
+        });
 
-          const grid = document.createElement("div");
-          grid.className = "pdf-q-photo-grid";
-
-          photos.forEach((dataUrl, pIdx) => {
-            const img = document.createElement("img");
-            img.src = dataUrl;
-            img.alt = rec.booth + " " + (qIdx + 1) + "번 사진 " + (pIdx + 1);
-            grid.appendChild(img);
-          });
-
-          block.appendChild(title);
-          block.appendChild(grid);
-          photoBlocks.push(block);
-        }
-      });
-
-      section.appendChild(table);
-
-      const memoBox = document.createElement("div");
-      memoBox.className = "pdf-memo-box";
-      memoBox.innerHTML =
-        "<div style='font-weight:bold; margin-bottom:4px;'>[특이사항 메모]</div>" +
-        "<div>" + escapeHtml(rec.memo ? rec.memo : "특이사항 없음") + "</div>";
-      section.appendChild(memoBox);
-
-      const photoArea = document.createElement("div");
-      photoArea.className = "pdf-photo-area";
-      photoArea.innerHTML =
-        "<p style='font-weight:bold; text-align:left; font-size:13px; margin-bottom:6px;'>[항목별 현장 첨부 사진]</p>";
-
-      if (hasAnyPhoto) {
-        photoBlocks.forEach(blk => photoArea.appendChild(blk));
-      } else {
-        photoArea.innerHTML +=
-          '<div style="font-size:12.5px; color:#555; padding:4px 0;">첨부된 현장 사진 없음</div>';
+        block.appendChild(title);
+        block.appendChild(grid);
+        photoBlocks.push(block);
       }
-
-      section.appendChild(photoArea);
-      boothsContainer.appendChild(section);
     });
+
+    section.appendChild(table);
+
+    const memoBox = document.createElement("div");
+    memoBox.className = "pdf-memo-box";
+    memoBox.innerHTML =
+      "<div style='font-weight:bold; margin-bottom:4px;'>[특이사항 메모]</div>" +
+      "<div>" + escapeHtml(rec.memo ? rec.memo : "특이사항 없음") + "</div>";
+    section.appendChild(memoBox);
+
+    const photoArea = document.createElement("div");
+    photoArea.className = "pdf-photo-area";
+    photoArea.innerHTML =
+      "<p style='font-weight:bold; text-align:left; font-size:12.5px; margin:0 0 6px;'>[항목별 현장 첨부 사진]</p>";
+
+    if (hasAnyPhoto) {
+      photoBlocks.forEach(blk => photoArea.appendChild(blk));
+    } else {
+      photoArea.innerHTML +=
+        '<div style="font-size:12px; color:#555; padding:2px 0;">첨부된 현장 사진 없음</div>';
+    }
+
+    section.appendChild(photoArea);
+    return section;
   }
 
-  async function createPdfBase64FromCurrentDom() {
-    await new Promise(resolve => setTimeout(resolve, 150));
-    const reportEl = document.getElementById("pdfReport");
-    const canvas = await html2canvas(reportEl, {
+  async function renderElementToPdfPages(pdf, elementEl, pageWidthMm, pageHeightMm, isFirstPageOfDoc) {
+    const canvas = await html2canvas(elementEl, {
       scale: 1.5,
       useCORS: true,
       backgroundColor: "#ffffff"
     });
 
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidthMm = pdf.internal.pageSize.getWidth();
-    const pageHeightMm = pdf.internal.pageSize.getHeight();
-    const imgWidthMm = pageWidthMm;
-    const imgHeightMm = (canvas.height * imgWidthMm) / canvas.width;
+    const marginX = 6;
+    const marginY = 6;
+    const usableWidthMm = pageWidthMm - marginX * 2;
+    const usableHeightMm = pageHeightMm - marginY * 2;
+    const imgHeightMm = (canvas.height * usableWidthMm) / canvas.width;
 
-    // 한 페이지(297mm)를 초과하는 길이는 여러 페이지로 분할 저장
-    if (imgHeightMm <= pageHeightMm) {
-      const imgData = canvas.toDataURL("image/jpeg", 0.85);
-      pdf.addImage(imgData, "JPEG", 0, 0, imgWidthMm, imgHeightMm);
-      return pdf.output("datauristring").split(",")[1];
+    if (imgHeightMm <= usableHeightMm) {
+      if (!isFirstPageOfDoc) {
+        pdf.addPage();
+      }
+      pdf.addImage(
+        canvas.toDataURL("image/jpeg", 0.85),
+        "JPEG",
+        marginX,
+        marginY,
+        usableWidthMm,
+        imgHeightMm
+      );
+      return;
     }
 
-    const pxPerMm = canvas.width / imgWidthMm;
-    const pageHeightPx = Math.floor(pageHeightMm * pxPerMm);
-    let renderedHeightPx = 0;
-    let pageIndex = 0;
+    const pxPerMm = canvas.width / usableWidthMm;
+    const pageHeightPx = Math.max(1, Math.floor(usableHeightMm * pxPerMm));
+    let renderedPx = 0;
+    let sliceIdx = 0;
 
-    while (renderedHeightPx < canvas.height) {
-      const sliceHeightPx = Math.min(pageHeightPx, canvas.height - renderedHeightPx);
-      const pageCanvas = document.createElement("canvas");
-      pageCanvas.width = canvas.width;
-      pageCanvas.height = sliceHeightPx;
+    while (renderedPx < canvas.height) {
+      const sliceHeightPx = Math.min(pageHeightPx, canvas.height - renderedPx);
+      const sliceCanvas = document.createElement("canvas");
+      sliceCanvas.width = canvas.width;
+      sliceCanvas.height = sliceHeightPx;
 
-      const ctx = pageCanvas.getContext("2d");
+      const ctx = sliceCanvas.getContext("2d");
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+      ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
       ctx.drawImage(
         canvas,
         0,
-        renderedHeightPx,
+        renderedPx,
         canvas.width,
         sliceHeightPx,
         0,
@@ -1298,16 +1295,104 @@
         sliceHeightPx
       );
 
-      const pageImgData = pageCanvas.toDataURL("image/jpeg", 0.85);
-      const sliceHeightMm = (sliceHeightPx * imgWidthMm) / canvas.width;
-
-      if (pageIndex > 0) {
+      const sliceHeightMm = (sliceHeightPx * usableWidthMm) / canvas.width;
+      if (!isFirstPageOfDoc || sliceIdx > 0) {
         pdf.addPage();
       }
-      pdf.addImage(pageImgData, "JPEG", 0, 0, imgWidthMm, sliceHeightMm);
+      pdf.addImage(
+        sliceCanvas.toDataURL("image/jpeg", 0.85),
+        "JPEG",
+        marginX,
+        marginY,
+        usableWidthMm,
+        sliceHeightMm
+      );
 
-      renderedHeightPx += sliceHeightPx;
-      pageIndex++;
+      renderedPx += sliceHeightPx;
+      sliceIdx++;
+    }
+  }
+
+  async function createCompanyPdfBase64(companyName, boothList, dateStr) {
+    document.getElementById("pdfCompany").textContent = companyName;
+    document.getElementById("pdfBoothCount").textContent = boothList.length + "개";
+    document.getElementById("pdfInspector").textContent = INSPECTOR_NAME;
+    document.getElementById("pdfDate").textContent = dateStr;
+
+    const boothsContainer = document.getElementById("pdfBoothsContainer");
+    boothsContainer.innerHTML = "";
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pageWidthMm = pdf.internal.pageSize.getWidth();
+    const pageHeightMm = pdf.internal.pageSize.getHeight();
+
+    // 1페이지 상단에 보고서 제목 및 요약 정보 출력
+    const headerEl = document.getElementById("pdfHeaderArea");
+    await new Promise(resolve => setTimeout(resolve, 80));
+    const headerCanvas = await html2canvas(headerEl, {
+      scale: 1.5,
+      useCORS: true,
+      backgroundColor: "#ffffff"
+    });
+    const marginX = 6;
+    const marginY = 6;
+    const usableWidthMm = pageWidthMm - marginX * 2;
+    const headerHeightMm = (headerCanvas.height * usableWidthMm) / headerCanvas.width;
+
+    pdf.addImage(
+      headerCanvas.toDataURL("image/jpeg", 0.85),
+      "JPEG",
+      marginX,
+      marginY,
+      usableWidthMm,
+      headerHeightMm
+    );
+
+    let cursorYMm = marginY + headerHeightMm + 3;
+
+    // 각 가판별로 10개 항목·메모·사진 전체를 누락 없이 페이지에 배치
+    for (let bIdx = 0; bIdx < boothList.length; bIdx++) {
+      const sectionEl = createSingleBoothSectionEl(boothList[bIdx], bIdx);
+      boothsContainer.innerHTML = "";
+      boothsContainer.appendChild(sectionEl);
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const boothCanvas = await html2canvas(sectionEl, {
+        scale: 1.5,
+        useCORS: true,
+        backgroundColor: "#ffffff"
+      });
+
+      const boothHeightMm = (boothCanvas.height * usableWidthMm) / boothCanvas.width;
+      const remainingHeightMm = pageHeightMm - marginY - cursorYMm;
+
+      if (boothHeightMm <= remainingHeightMm) {
+        pdf.addImage(
+          boothCanvas.toDataURL("image/jpeg", 0.85),
+          "JPEG",
+          marginX,
+          cursorYMm,
+          usableWidthMm,
+          boothHeightMm
+        );
+        cursorYMm += boothHeightMm + 4;
+      } else if (boothHeightMm <= pageHeightMm - marginY * 2) {
+        pdf.addPage();
+        pdf.addImage(
+          boothCanvas.toDataURL("image/jpeg", 0.85),
+          "JPEG",
+          marginX,
+          marginY,
+          usableWidthMm,
+          boothHeightMm
+        );
+        cursorYMm = marginY + boothHeightMm + 4;
+      } else {
+        // 가판 내 사진이 많아 A4 1장 높이를 넘길 경우 안전하게 분할
+        await renderElementToPdfPages(pdf, sectionEl, pageWidthMm, pageHeightMm, false);
+        cursorYMm = pageHeightMm - marginY;
+      }
     }
 
     return pdf.output("datauristring").split(",")[1];
@@ -1375,8 +1460,7 @@
         statusMsg.innerText =
           "업체별 PDF 생성 중 (" + (i + 1) + " / " + companyEntries.length + "): " + companyName + "...";
 
-        buildCompanyPdfDom(companyName, boothList, dateStr);
-        const pdfBase64 = await createPdfBase64FromCurrentDom();
+        const pdfBase64 = await createCompanyPdfBase64(companyName, boothList, dateStr);
         const fileName =
           yymmdd +
           sanitizeFilePart(companyName) +
