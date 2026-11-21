@@ -21,7 +21,7 @@
     body { margin: 0; padding: 16px; background: var(--bg); color: var(--text); }
     .container { max-width: 540px; margin: 0 auto; background: var(--card); padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     h1 { font-size: 20px; margin: 0 0 16px; text-align: center; color: #0f172a; }
-    .meta-group { margin-bottom: 16px; }
+    .meta-group { margin-bottom: 16px; position: relative; }
     .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
     .meta-group label, .memo-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #475569; }
     .meta-group input {
@@ -33,6 +33,54 @@
       background: #fff;
       color: var(--text);
     }
+    .combo-wrap { position: relative; }
+    .combo-input-box { position: relative; display: flex; align-items: center; }
+    .combo-input-box input { padding-right: 34px; }
+    .combo-toggle-btn {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: transparent;
+      color: #64748b;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .combo-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      max-height: 220px;
+      overflow-y: auto;
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+      z-index: 50;
+    }
+    .combo-dropdown.open { display: block; }
+    .combo-option {
+      padding: 9px 12px;
+      font-size: 13.5px;
+      cursor: pointer;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .combo-option:last-child { border-bottom: none; }
+    .combo-option:hover, .combo-option.active { background: #eff6ff; color: #1d4ed8; font-weight: 600; }
+    .combo-sub { font-size: 11.5px; color: #64748b; flex-shrink: 0; }
+    .combo-empty { padding: 10px 12px; font-size: 12.5px; color: #64748b; text-align: center; }
     .field-hint { margin-top: 4px; font-size: 11.5px; color: #64748b; }
 
     .question-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
@@ -183,36 +231,40 @@
 <div class="container">
   <h1>📋 일일 안전 점검 리스트</h1>
 
-  <!-- 1. 업체명 / 가판명 (점검자 성명 위 배치) -->
+  <!-- 1. 업체명 / 가판명 (점검자 성명 위 배치, 리스트 선택 + 검색 + 직접 입력) -->
   <div class="meta-grid">
-    <div class="meta-group" style="margin-bottom: 0;">
-      <label for="companyInput">점검 업체 (검색·선택·입력)</label>
-      <input
-        type="text"
-        id="companyInput"
-        list="companyList"
-        placeholder="업체명 입력 또는 선택"
-        autocomplete="off"
-        oninput="onCompanyInput()"
-        onchange="onCompanyInput()"
-      />
-      <datalist id="companyList"></datalist>
-      <div class="field-hint">목록에서 고르거나 직접 입력</div>
+    <div class="meta-group combo-wrap" style="margin-bottom: 0;" id="companyComboWrap">
+      <label for="companyInput">점검 업체</label>
+      <div class="combo-input-box">
+        <input
+          type="text"
+          id="companyInput"
+          placeholder="검색 · 선택 · 직접 입력"
+          autocomplete="off"
+          onfocus="openCompanyDropdown(true)"
+          oninput="onCompanyInput()"
+        />
+        <button type="button" class="combo-toggle-btn" tabindex="-1" aria-label="업체 목록 열기" onclick="toggleDropdown('company')">▼</button>
+      </div>
+      <div class="combo-dropdown" id="companyDropdown"></div>
+      <div class="field-hint">클릭해 선택하거나 검색·직접 입력</div>
     </div>
 
-    <div class="meta-group" style="margin-bottom: 0;">
+    <div class="meta-group combo-wrap" style="margin-bottom: 0;" id="boothComboWrap">
       <label for="boothInput">가판 (기존 가판명)</label>
-      <input
-        type="text"
-        id="boothInput"
-        list="boothList"
-        placeholder="가판명 입력 또는 선택"
-        autocomplete="off"
-        oninput="onBoothInput()"
-        onchange="onBoothInput()"
-      />
-      <datalist id="boothList"></datalist>
-      <div class="field-hint">업체 선택 시 해당 가판 우선 표시</div>
+      <div class="combo-input-box">
+        <input
+          type="text"
+          id="boothInput"
+          placeholder="검색 · 선택 · 직접 입력"
+          autocomplete="off"
+          onfocus="openBoothDropdown(true)"
+          oninput="onBoothInput()"
+        />
+        <button type="button" class="combo-toggle-btn" tabindex="-1" aria-label="가판 목록 열기" onclick="toggleDropdown('booth')">▼</button>
+      </div>
+      <div class="combo-dropdown" id="boothDropdown"></div>
+      <div class="field-hint">업체 선택 시 해당 가판 목록 표시</div>
     </div>
   </div>
 
@@ -452,86 +504,221 @@
 
   // 업체별 지정 및 기존 가판명 리스트 (1~34번)[cite: 1]
   const INSPECTION_TARGETS = [
-    { no: 1, company: "BBQ", booth: "BBQ(스카이크루즈)" },[cite: 1]
-    { no: 2, company: "CGV", booth: "모노브레드(공연장)" },[cite: 1]
-    { no: 3, company: "CGV", booth: "오징어(공연장)" },[cite: 1]
-    { no: 4, company: "CGV", booth: "CGV(락스빌)" },[cite: 1]
-    { no: 5, company: "HS마켓", booth: "이레(로봇VR)" },[cite: 1]
-    { no: 6, company: "HS마켓", booth: "이레(트레일러)" },[cite: 1]
-    { no: 7, company: "HS마켓", booth: "오오츄(스노우)" },[cite: 1]
-    { no: 8, company: "HS마켓", booth: "앤티앤스프레즐(스노우)" },[cite: 1]
-    { no: 9, company: "다정식품", booth: "소프트(몽키밸리1)" },[cite: 1]
-    { no: 10, company: "다정식품", booth: "이레(AWS)" },[cite: 1]
-    { no: 11, company: "다정식품", booth: "이레(정문) ※ 푸드트럭" },[cite: 1]
-    { no: 12, company: "다정식품", booth: "이레(푸드트럭)" },[cite: 1]
-    { no: 13, company: "미스터밀크", booth: "소프트(비룡2)" },[cite: 1]
-    { no: 14, company: "미스터밀크", booth: "소프트(사파리)" },[cite: 1]
-    { no: 15, company: "미스터밀크", booth: "소프트(스낵버스터)" },[cite: 1]
-    { no: 16, company: "미스터밀크", booth: "소프트(정문)" },[cite: 1]
-    { no: 17, company: "미스터밀크", booth: "소프트(포시즌가든)" },[cite: 1]
-    { no: 18, company: "미스터밀크", booth: "나루아토(소다파운틴)" },[cite: 1]
-    { no: 19, company: "미스터밀크", booth: "아이스쿨(소다파운틴)" },[cite: 1]
-    { no: 20, company: "앤티앤스", booth: "앤티앤스프레즐(매장)" },[cite: 1]
-    { no: 21, company: "오마뎅", booth: "카페(굿프렌즈캐빈)" },[cite: 1]
-    { no: 22, company: "오마뎅", booth: "구슬(콜럼버스)" },[cite: 1]
-    { no: 23, company: "오마뎅", booth: "아이스쿨(스낵버스터)" },[cite: 1]
-    { no: 24, company: "오마뎅", booth: "오오츄(로스트밸리)" },[cite: 1]
-    { no: 25, company: "오오츄", booth: "오오츄(라피아자)" },[cite: 1]
-    { no: 26, company: "오오츄", booth: "오오츄(락스빌)" },[cite: 1]
-    { no: 27, company: "오크베리", booth: "구슬(티티카카)" },[cite: 1]
-    { no: 28, company: "오크베리", booth: "아이스쿨(티티카카)" },[cite: 1]
-    { no: 29, company: "쥬시", booth: "소프트(코스타스)" },[cite: 1]
-    { no: 30, company: "쥬시", booth: "소프트(회전목마)" },[cite: 1]
-    { no: 31, company: "쥬시", booth: "구슬(공연장)" },[cite: 1]
-    { no: 32, company: "쥬시", booth: "소떡소떡(뮤직가든)" },[cite: 1]
-    { no: 33, company: "쥬시", booth: "쿠치나(장미원)" },[cite: 1]
-    { no: 34, company: "카페아모제", booth: "아모제" }[cite: 1]
+    { no: 1, company: "BBQ", booth: "BBQ(스카이크루즈)" },
+    { no: 2, company: "CGV", booth: "모노브레드(공연장)" },
+    { no: 3, company: "CGV", booth: "오징어(공연장)" },
+    { no: 4, company: "CGV", booth: "CGV(락스빌)" },
+    { no: 5, company: "HS마켓", booth: "이레(로봇VR)" },
+    { no: 6, company: "HS마켓", booth: "이레(트레일러)" },
+    { no: 7, company: "HS마켓", booth: "오오츄(스노우)" },
+    { no: 8, company: "HS마켓", booth: "앤티앤스프레즐(스노우)" },
+    { no: 9, company: "다정식품", booth: "소프트(몽키밸리1)" },
+    { no: 10, company: "다정식품", booth: "이레(AWS)" },
+    { no: 11, company: "다정식품", booth: "이레(정문) ※ 푸드트럭" },
+    { no: 12, company: "다정식품", booth: "이레(푸드트럭)" },
+    { no: 13, company: "미스터밀크", booth: "소프트(비룡2)" },
+    { no: 14, company: "미스터밀크", booth: "소프트(사파리)" },
+    { no: 15, company: "미스터밀크", booth: "소프트(스낵버스터)" },
+    { no: 16, company: "미스터밀크", booth: "소프트(정문)" },
+    { no: 17, company: "미스터밀크", booth: "소프트(포시즌가든)" },
+    { no: 18, company: "미스터밀크", booth: "나루아토(소다파운틴)" },
+    { no: 19, company: "미스터밀크", booth: "아이스쿨(소다파운틴)" },
+    { no: 20, company: "앤티앤스", booth: "앤티앤스프레즐(매장)" },
+    { no: 21, company: "오마뎅", booth: "카페(굿프렌즈캐빈)" },
+    { no: 22, company: "오마뎅", booth: "구슬(콜럼버스)" },
+    { no: 23, company: "오마뎅", booth: "아이스쿨(스낵버스터)" },
+    { no: 24, company: "오마뎅", booth: "오오츄(로스트밸리)" },
+    { no: 25, company: "오오츄", booth: "오오츄(라피아자)" },
+    { no: 26, company: "오오츄", booth: "오오츄(락스빌)" },
+    { no: 27, company: "오크베리", booth: "구슬(티티카카)" },
+    { no: 28, company: "오크베리", booth: "아이스쿨(티티카카)" },
+    { no: 29, company: "쥬시", booth: "소프트(코스타스)" },
+    { no: 30, company: "쥬시", booth: "소프트(회전목마)" },
+    { no: 31, company: "쥬시", booth: "구슬(공연장)" },
+    { no: 32, company: "쥬시", booth: "소떡소떡(뮤직가든)" },
+    { no: 33, company: "쥬시", booth: "쿠치나(장미원)" },
+    { no: 34, company: "카페아모제", booth: "아모제" }
   ];
 
-  function populateBoothDatalist(filterCompany) {
-    const boothList = document.getElementById("boothList");
-    if (!boothList) return;
-    boothList.innerHTML = "";
+  function getCompanyEntries() {
+    const map = new Map();
+    INSPECTION_TARGETS.forEach(item => {
+      map.set(item.company, (map.get(item.company) || 0) + 1);
+    });
+    return Array.from(map.entries()).map(([company, count]) => ({ company, count }));
+  }
 
-    const targetList = filterCompany
-      ? INSPECTION_TARGETS.filter(item => item.company.toLowerCase() === filterCompany.toLowerCase())
-      : INSPECTION_TARGETS;
+  function closeAllDropdowns() {
+    document.querySelectorAll(".combo-dropdown").forEach(el => el.classList.remove("open"));
+  }
 
-    const candidates = targetList.length > 0 ? targetList : INSPECTION_TARGETS;
+  function renderCompanyDropdown(filterText = "", showAllWhenExact = false) {
+    const dropdown = document.getElementById("companyDropdown");
+    if (!dropdown) return;
 
-    candidates.forEach(item => {
-      const option = document.createElement("option");
-      option.value = item.booth;
-      option.label = `${item.no}번 · ${item.company}`;
-      boothList.appendChild(option);
+    const query = filterText.trim().toLowerCase();
+    const allCompanies = getCompanyEntries();
+    const exactMatch = query && allCompanies.some(c => c.company.toLowerCase() === query);
+
+    const list = (!query || (showAllWhenExact && exactMatch))
+      ? allCompanies
+      : allCompanies.filter(c => c.company.toLowerCase().includes(query));
+
+    dropdown.innerHTML = "";
+
+    if (list.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "combo-empty";
+      empty.textContent = "목록에 없는 업체명입니다. 직접 입력값으로 사용됩니다.";
+      dropdown.appendChild(empty);
+      return;
+    }
+
+    list.forEach(item => {
+      const opt = document.createElement("div");
+      opt.className = "combo-option" + (item.company.toLowerCase() === query ? " active" : "");
+
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = item.company;
+
+      const subSpan = document.createElement("span");
+      subSpan.className = "combo-sub";
+      subSpan.textContent = item.count + "개 가판";
+
+      opt.appendChild(nameSpan);
+      opt.appendChild(subSpan);
+      opt.onmousedown = function(e) {
+        e.preventDefault();
+        selectCompanyFromList(item.company);
+      };
+      dropdown.appendChild(opt);
     });
   }
 
-  function initTargetInputs() {
-    const companyList = document.getElementById("companyList");
-    if (!companyList) return;
-    companyList.innerHTML = "";
+  function renderBoothDropdown(filterText = "", showAllWhenExact = false) {
+    const dropdown = document.getElementById("boothDropdown");
+    const companyVal = document.getElementById("companyInput").value.trim().toLowerCase();
+    if (!dropdown) return;
 
-    const uniqueCompanies = [...new Set(INSPECTION_TARGETS.map(item => item.company))];
+    const companyMatched = companyVal
+      ? INSPECTION_TARGETS.filter(item => item.company.toLowerCase() === companyVal)
+      : [];
 
-    uniqueCompanies.forEach(company => {
-      const count = INSPECTION_TARGETS.filter(item => item.company === company).length;
-      const option = document.createElement("option");
-      option.value = company;
-      option.label = `${count}개 가판`;
-      companyList.appendChild(option);
+    const baseList = companyMatched.length > 0 ? companyMatched : INSPECTION_TARGETS;
+    const query = filterText.trim().toLowerCase();
+    const exactMatch = query && baseList.some(b => b.booth.toLowerCase() === query);
+
+    const list = (!query || (showAllWhenExact && exactMatch))
+      ? baseList
+      : baseList.filter(b =>
+          b.booth.toLowerCase().includes(query) ||
+          b.company.toLowerCase().includes(query) ||
+          String(b.no).includes(query)
+        );
+
+    dropdown.innerHTML = "";
+
+    if (list.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "combo-empty";
+      empty.textContent = "목록에 없는 가판명입니다. 직접 입력값으로 사용됩니다.";
+      dropdown.appendChild(empty);
+      return;
+    }
+
+    list.forEach(item => {
+      const opt = document.createElement("div");
+      opt.className = "combo-option" + (item.booth.toLowerCase() === query ? " active" : "");
+
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = item.no + ". " + item.booth;
+
+      const subSpan = document.createElement("span");
+      subSpan.className = "combo-sub";
+      subSpan.textContent = item.company;
+
+      opt.appendChild(nameSpan);
+      opt.appendChild(subSpan);
+      opt.onmousedown = function(e) {
+        e.preventDefault();
+        selectBoothFromList(item);
+      };
+      dropdown.appendChild(opt);
     });
+  }
 
-    populateBoothDatalist("");
+  function openCompanyDropdown(showAllWhenExact = false) {
+    closeAllDropdowns();
+    const val = document.getElementById("companyInput").value;
+    renderCompanyDropdown(val, showAllWhenExact);
+    document.getElementById("companyDropdown").classList.add("open");
+  }
+
+  function openBoothDropdown(showAllWhenExact = false) {
+    closeAllDropdowns();
+    const val = document.getElementById("boothInput").value;
+    renderBoothDropdown(val, showAllWhenExact);
+    document.getElementById("boothDropdown").classList.add("open");
+  }
+
+  function toggleDropdown(type) {
+    const targetId = type === "company" ? "companyDropdown" : "boothDropdown";
+    const dd = document.getElementById(targetId);
+    const isOpen = dd.classList.contains("open");
+    if (isOpen) {
+      dd.classList.remove("open");
+      return;
+    }
+    if (type === "company") {
+      document.getElementById("companyInput").focus();
+      openCompanyDropdown(true);
+    } else {
+      document.getElementById("boothInput").focus();
+      openBoothDropdown(true);
+    }
+  }
+
+  function selectCompanyFromList(companyName) {
+    const companyInput = document.getElementById("companyInput");
+    const boothInput = document.getElementById("boothInput");
+    companyInput.value = companyName;
+
+    const matchedBooths = INSPECTION_TARGETS.filter(
+      item => item.company.toLowerCase() === companyName.toLowerCase()
+    );
+
+    if (matchedBooths.length === 1) {
+      boothInput.value = matchedBooths[0].booth;
+    } else if (boothInput.value.trim()) {
+      const stillValid = matchedBooths.some(
+        item => item.booth.toLowerCase() === boothInput.value.trim().toLowerCase()
+      );
+      if (!stillValid) boothInput.value = "";
+    }
+
+    document.getElementById("companyDropdown").classList.remove("open");
+    if (matchedBooths.length > 1) {
+      openBoothDropdown(true);
+    }
+  }
+
+  function selectBoothFromList(item) {
+    const companyInput = document.getElementById("companyInput");
+    const boothInput = document.getElementById("boothInput");
+
+    boothInput.value = item.booth;
+    if (!companyInput.value.trim()) {
+      companyInput.value = item.company;
+    }
+    document.getElementById("boothDropdown").classList.remove("open");
   }
 
   function onCompanyInput() {
-    const companyInput = document.getElementById("companyInput");
+    const companyVal = document.getElementById("companyInput").value.trim();
     const boothInput = document.getElementById("boothInput");
-    if (!companyInput || !boothInput) return;
 
-    const companyVal = companyInput.value.trim();
-    populateBoothDatalist(companyVal);
+    renderCompanyDropdown(companyVal, false);
+    document.getElementById("companyDropdown").classList.add("open");
 
     const matchedBooths = INSPECTION_TARGETS.filter(
       item => item.company.toLowerCase() === companyVal.toLowerCase()
@@ -543,28 +730,34 @@
       const stillValid = matchedBooths.some(
         item => item.booth.toLowerCase() === boothInput.value.trim().toLowerCase()
       );
-      if (!stillValid) {
-        boothInput.value = "";
-      }
+      if (!stillValid) boothInput.value = "";
     }
+
+    renderBoothDropdown(boothInput.value, true);
   }
 
   function onBoothInput() {
-    const boothInput = document.getElementById("boothInput");
+    const boothVal = document.getElementById("boothInput").value.trim();
     const companyInput = document.getElementById("companyInput");
-    if (!boothInput || !companyInput) return;
 
-    const boothVal = boothInput.value.trim();
     if (boothVal && !companyInput.value.trim()) {
       const exactMatch = INSPECTION_TARGETS.find(
         item => item.booth.toLowerCase() === boothVal.toLowerCase()
       );
       if (exactMatch) {
         companyInput.value = exactMatch.company;
-        populateBoothDatalist(exactMatch.company);
       }
     }
+
+    renderBoothDropdown(boothVal, false);
+    document.getElementById("boothDropdown").classList.add("open");
   }
+
+  document.addEventListener("click", function(e) {
+    if (!e.target.closest(".combo-wrap")) {
+      closeAllDropdowns();
+    }
+  });
 
   const answers = Array(QUESTION_COUNT).fill(null);
   const questionPhotos = Array.from({ length: QUESTION_COUNT }, () => []);
@@ -841,7 +1034,8 @@
     }
   }
 
-  initTargetInputs();
+  renderCompanyDropdown("", true);
+  renderBoothDropdown("", true);
 </script>
 
 </body>
