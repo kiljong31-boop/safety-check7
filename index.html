@@ -863,6 +863,32 @@
     });
   }
 
+  function resetInspectionForm() {
+    document.getElementById("companyInput").value = "";
+    document.getElementById("boothInput").value = "";
+    document.getElementById("memoInput").value = "";
+
+    for (let i = 0; i < QUESTION_COUNT; i++) {
+      answers[i] = null;
+      questionPhotos[i] = [];
+
+      const btnO = document.getElementById("btn-o-" + i);
+      const btnX = document.getElementById("btn-x-" + i);
+      if (btnO) btnO.className = "ox-btn";
+      if (btnX) btnX.className = "ox-btn";
+
+      const fileInput = document.getElementById("photoInput-" + i);
+      if (fileInput) fileInput.value = "";
+
+      renderQuestionPhotos(i);
+    }
+
+    closeAllDropdowns();
+    renderCompanyDropdown("", true);
+    renderBoothDropdown("", true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   function getYYMMDD(dateObj) {
     const yy = String(dateObj.getFullYear()).slice(-2);
     const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
@@ -994,9 +1020,11 @@
         })
       });
 
+      resetInspectionForm();
+
       statusMsg.style.color = "#16a34a";
       statusMsg.innerHTML =
-        "✅ [" + company + " - " + booth + "] 점검 결과 PDF 생성 및 메일 전송 요청이 완료되었습니다!<br>" +
+        "✅ [" + company + " - " + booth + "] 점검 결과 PDF 생성 및 메일 전송 요청이 완료되었으며 양식이 초기화되었습니다.<br>" +
         "<span style='font-size:12.5px; color:#334155;'>전송 파일명: " + fileName + "</span>";
     } catch (error) {
       console.error(error);
