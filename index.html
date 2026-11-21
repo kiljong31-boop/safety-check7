@@ -35,36 +35,6 @@
     }
     .field-hint { margin-top: 4px; font-size: 11.5px; color: #64748b; }
 
-    .saved-banner {
-      display: none;
-      margin-bottom: 14px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      font-size: 12.5px;
-      color: #1e3a8a;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .saved-banner-actions { display: flex; gap: 6px; }
-    .mini-btn {
-      padding: 5px 10px;
-      border-radius: 6px;
-      border: 1px solid #93c5fd;
-      background: #fff;
-      color: #1d4ed8;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .mini-btn.danger {
-      border-color: #fecaca;
-      color: #b91c1c;
-    }
-
     .question-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
     .question-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
     .question-text { font-size: 14px; line-height: 1.4; flex: 1; font-weight: 500; }
@@ -128,34 +98,7 @@
       justify-content: center;
     }
 
-    .booth-save-bar {
-      margin-top: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .booth-save-btn {
-      width: 100%;
-      padding: 12px;
-      background: #0f766e;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 14.5px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.15s;
-    }
-    .booth-save-btn:hover { background: #115e59; }
-    .booth-save-status {
-      font-size: 12.5px;
-      color: #0f766e;
-      font-weight: 600;
-      text-align: center;
-      min-height: 18px;
-    }
-
-    .memo-group { margin-top: 16px; }
+    .memo-group { margin-top: 18px; }
     .memo-group textarea {
       width: 100%;
       min-height: 84px;
@@ -188,44 +131,30 @@
       font-size: 13.5px;
       font-weight: bold;
     }
-    .pdf-booth-section {
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 16px;
-      background: #fff;
-    }
-    .pdf-booth-header {
-      background: #e2e8f0;
-      padding: 7px 10px;
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      border-left: 4px solid #1e293b;
-    }
-    #pdfReport table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 12.5px; }
-    #pdfReport th, #pdfReport td { border: 1px solid #333; padding: 6px 8px; text-align: left; }
+    #pdfReport table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 13px; }
+    #pdfReport th, #pdfReport td { border: 1px solid #333; padding: 7px 10px; text-align: left; }
     #pdfReport th { background: #f1f5f9; text-align: center; }
-    #pdfReport td.ans { text-align: center; font-weight: bold; width: 55px; }
+    #pdfReport td.ans { text-align: center; font-weight: bold; width: 60px; }
 
     .pdf-memo-box {
-      border: 1px solid #cbd5e1;
-      padding: 8px 10px;
-      margin-bottom: 10px;
-      font-size: 12.5px;
+      border: 1px solid #333;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      font-size: 13px;
       background: #fafafa;
       white-space: pre-wrap;
-      line-height: 1.45;
+      line-height: 1.5;
     }
+    #pdfPhotoArea { margin-top: 10px; }
     .pdf-q-photo-block {
       border: 1px solid #cbd5e1;
       border-radius: 6px;
       padding: 8px 10px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       background: #fff;
     }
     .pdf-q-photo-title {
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: bold;
       margin-bottom: 6px;
       color: #0f172a;
@@ -237,7 +166,7 @@
     }
     .pdf-q-photo-grid img {
       width: 100%;
-      height: 100px;
+      height: 105px;
       object-fit: cover;
       border: 1px solid #ccc;
       border-radius: 4px;
@@ -284,15 +213,6 @@
       />
       <datalist id="boothList"></datalist>
       <div class="field-hint">업체 선택 시 해당 가판 우선 표시</div>
-    </div>
-  </div>
-
-  <!-- 저장된 가판 점검 내역 알림 배너 -->
-  <div class="saved-banner" id="savedBoothBanner">
-    <span id="savedBoothInfo">저장된 점검 내역이 있습니다.</span>
-    <div class="saved-banner-actions">
-      <button type="button" class="mini-btn" onclick="loadSavedBoothInspection()">불러오기</button>
-      <button type="button" class="mini-btn danger" onclick="deleteSavedBoothInspection()">삭제</button>
     </div>
   </div>
 
@@ -485,12 +405,6 @@
     </div>
   </div>
 
-  <!-- 일일 안전 점검 리스트 다음: /가판 점검 저장 버튼 -->
-  <div class="booth-save-bar">
-    <button type="button" id="boothSaveBtn" class="booth-save-btn" onclick="saveBoothInspection()">/가판 점검 저장</button>
-    <div class="booth-save-status" id="boothSaveStatus"></div>
-  </div>
-
   <div class="memo-group">
     <label for="memoInput">📝 특이사항 메모 (선택)</label>
     <textarea id="memoInput" placeholder="X 항목 조치 내용이나 현장 특이사항이 있으면 입력하세요."></textarea>
@@ -500,16 +414,33 @@
   <div id="statusMsg"></div>
 </div>
 
-<!-- PDF 변환용 템플릿 (업체별 1개 PDF 렌더링) -->
+<!-- PDF 변환용 템플릿 -->
 <div id="pdfReport">
-  <h2 id="pdfTitle">일일 안전 점검 결과 보고서</h2>
+  <h2>일일 안전 점검 결과 보고서</h2>
   <div class="pdf-info-box">
     <span>점검 업체: <span id="pdfCompany">-</span></span>
+    <span>점검 가판: <span id="pdfBooth">-</span></span>
     <span>점검자 성명: <span id="pdfInspector">-</span></span>
-    <span>점검 가판 수: <span id="pdfBoothCount">-</span></span>
     <span>점검 일시: <span id="pdfDate">-</span></span>
   </div>
-  <div id="pdfBoothSections"></div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 50px;">번호</th>
+        <th>점검 항목</th>
+        <th style="width: 70px;">결과</th>
+      </tr>
+    </thead>
+    <tbody id="pdfTableBody"></tbody>
+  </table>
+  <div class="pdf-memo-box">
+    <div style="font-weight:bold; margin-bottom:4px;">[특이사항 메모]</div>
+    <div id="pdfMemoText"></div>
+  </div>
+  <div id="pdfPhotoArea">
+    <p style="font-weight:bold; text-align:left; font-size:13px; margin-bottom:6px;">[항목별 현장 첨부 사진]</p>
+    <div id="pdfPhotoList"></div>
+  </div>
 </div>
 
 <script>
@@ -518,44 +449,43 @@
 
   const MAX_PHOTOS_PER_QUESTION = 5;
   const QUESTION_COUNT = 10;
-  const BOOTH_STORAGE_PREFIX = "safety_check_booth_v1::";
 
-  // 업체별 지정 및 기존 가판명 리스트 (1~34번)
+  // 업체별 지정 및 기존 가판명 리스트 (1~34번)[cite: 1]
   const INSPECTION_TARGETS = [
-    { no: 1, company: "BBQ", booth: "BBQ(스카이크루즈)" },
-    { no: 2, company: "CGV", booth: "모노브레드(공연장)" },
-    { no: 3, company: "CGV", booth: "오징어(공연장)" },
-    { no: 4, company: "CGV", booth: "CGV(락스빌)" },
-    { no: 5, company: "HS마켓", booth: "이레(로봇VR)" },
-    { no: 6, company: "HS마켓", booth: "이레(트레일러)" },
-    { no: 7, company: "HS마켓", booth: "오오츄(스노우)" },
-    { no: 8, company: "HS마켓", booth: "앤티앤스프레즐(스노우)" },
-    { no: 9, company: "다정식품", booth: "소프트(몽키밸리1)" },
-    { no: 10, company: "다정식품", booth: "이레(AWS)" },
-    { no: 11, company: "다정식품", booth: "이레(정문) ※ 푸드트럭" },
-    { no: 12, company: "다정식품", booth: "이레(푸드트럭)" },
-    { no: 13, company: "미스터밀크", booth: "소프트(비룡2)" },
-    { no: 14, company: "미스터밀크", booth: "소프트(사파리)" },
-    { no: 15, company: "미스터밀크", booth: "소프트(스낵버스터)" },
-    { no: 16, company: "미스터밀크", booth: "소프트(정문)" },
-    { no: 17, company: "미스터밀크", booth: "소프트(포시즌가든)" },
-    { no: 18, company: "미스터밀크", booth: "나루아토(소다파운틴)" },
-    { no: 19, company: "미스터밀크", booth: "아이스쿨(소다파운틴)" },
-    { no: 20, company: "앤티앤스", booth: "앤티앤스프레즐(매장)" },
-    { no: 21, company: "오마뎅", booth: "카페(굿프렌즈캐빈)" },
-    { no: 22, company: "오마뎅", booth: "구슬(콜럼버스)" },
-    { no: 23, company: "오마뎅", booth: "아이스쿨(스낵버스터)" },
-    { no: 24, company: "오마뎅", booth: "오오츄(로스트밸리)" },
-    { no: 25, company: "오오츄", booth: "오오츄(라피아자)" },
-    { no: 26, company: "오오츄", booth: "오오츄(락스빌)" },
-    { no: 27, company: "오크베리", booth: "구슬(티티카카)" },
-    { no: 28, company: "오크베리", booth: "아이스쿨(티티카카)" },
-    { no: 29, company: "쥬시", booth: "소프트(코스타스)" },
-    { no: 30, company: "쥬시", booth: "소프트(회전목마)" },
-    { no: 31, company: "쥬시", booth: "구슬(공연장)" },
-    { no: 32, company: "쥬시", booth: "소떡소떡(뮤직가든)" },
-    { no: 33, company: "쥬시", booth: "쿠치나(장미원)" },
-    { no: 34, company: "카페아모제", booth: "아모제" }
+    { no: 1, company: "BBQ", booth: "BBQ(스카이크루즈)" },[cite: 1]
+    { no: 2, company: "CGV", booth: "모노브레드(공연장)" },[cite: 1]
+    { no: 3, company: "CGV", booth: "오징어(공연장)" },[cite: 1]
+    { no: 4, company: "CGV", booth: "CGV(락스빌)" },[cite: 1]
+    { no: 5, company: "HS마켓", booth: "이레(로봇VR)" },[cite: 1]
+    { no: 6, company: "HS마켓", booth: "이레(트레일러)" },[cite: 1]
+    { no: 7, company: "HS마켓", booth: "오오츄(스노우)" },[cite: 1]
+    { no: 8, company: "HS마켓", booth: "앤티앤스프레즐(스노우)" },[cite: 1]
+    { no: 9, company: "다정식품", booth: "소프트(몽키밸리1)" },[cite: 1]
+    { no: 10, company: "다정식품", booth: "이레(AWS)" },[cite: 1]
+    { no: 11, company: "다정식품", booth: "이레(정문) ※ 푸드트럭" },[cite: 1]
+    { no: 12, company: "다정식품", booth: "이레(푸드트럭)" },[cite: 1]
+    { no: 13, company: "미스터밀크", booth: "소프트(비룡2)" },[cite: 1]
+    { no: 14, company: "미스터밀크", booth: "소프트(사파리)" },[cite: 1]
+    { no: 15, company: "미스터밀크", booth: "소프트(스낵버스터)" },[cite: 1]
+    { no: 16, company: "미스터밀크", booth: "소프트(정문)" },[cite: 1]
+    { no: 17, company: "미스터밀크", booth: "소프트(포시즌가든)" },[cite: 1]
+    { no: 18, company: "미스터밀크", booth: "나루아토(소다파운틴)" },[cite: 1]
+    { no: 19, company: "미스터밀크", booth: "아이스쿨(소다파운틴)" },[cite: 1]
+    { no: 20, company: "앤티앤스", booth: "앤티앤스프레즐(매장)" },[cite: 1]
+    { no: 21, company: "오마뎅", booth: "카페(굿프렌즈캐빈)" },[cite: 1]
+    { no: 22, company: "오마뎅", booth: "구슬(콜럼버스)" },[cite: 1]
+    { no: 23, company: "오마뎅", booth: "아이스쿨(스낵버스터)" },[cite: 1]
+    { no: 24, company: "오마뎅", booth: "오오츄(로스트밸리)" },[cite: 1]
+    { no: 25, company: "오오츄", booth: "오오츄(라피아자)" },[cite: 1]
+    { no: 26, company: "오오츄", booth: "오오츄(락스빌)" },[cite: 1]
+    { no: 27, company: "오크베리", booth: "구슬(티티카카)" },[cite: 1]
+    { no: 28, company: "오크베리", booth: "아이스쿨(티티카카)" },[cite: 1]
+    { no: 29, company: "쥬시", booth: "소프트(코스타스)" },[cite: 1]
+    { no: 30, company: "쥬시", booth: "소프트(회전목마)" },[cite: 1]
+    { no: 31, company: "쥬시", booth: "구슬(공연장)" },[cite: 1]
+    { no: 32, company: "쥬시", booth: "소떡소떡(뮤직가든)" },[cite: 1]
+    { no: 33, company: "쥬시", booth: "쿠치나(장미원)" },[cite: 1]
+    { no: 34, company: "카페아모제", booth: "아모제" }[cite: 1]
   ];
 
   function populateBoothDatalist(filterCompany) {
@@ -617,7 +547,6 @@
         boothInput.value = "";
       }
     }
-    checkSavedBoothBanner();
   }
 
   function onBoothInput() {
@@ -635,175 +564,10 @@
         populateBoothDatalist(exactMatch.company);
       }
     }
-    checkSavedBoothBanner();
   }
 
-  let answers = Array(QUESTION_COUNT).fill(null);
-  let questionPhotos = Array.from({ length: QUESTION_COUNT }, () => []);
-
-  function getBoothStorageKey(company, booth) {
-    return BOOTH_STORAGE_PREFIX + company.trim().toLowerCase() + "__" + booth.trim().toLowerCase();
-  }
-
-  function getAllSavedBoothInspections() {
-    const records = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (!key || !key.startsWith(BOOTH_STORAGE_PREFIX)) continue;
-      try {
-        const parsed = JSON.parse(localStorage.getItem(key));
-        if (parsed && parsed.company && parsed.booth) {
-          records.push(parsed);
-        }
-      } catch (e) {
-        console.error("저장 항목 파싱 실패:", key, e);
-      }
-    }
-    records.sort((a, b) => String(a.savedAt || "").localeCompare(String(b.savedAt || "")));
-    return records;
-  }
-
-  function checkSavedBoothBanner() {
-    const company = document.getElementById("companyInput").value.trim();
-    const booth = document.getElementById("boothInput").value.trim();
-    const banner = document.getElementById("savedBoothBanner");
-    const infoEl = document.getElementById("savedBoothInfo");
-
-    if (!company || !booth) {
-      banner.style.display = "none";
-      return;
-    }
-
-    try {
-      const raw = localStorage.getItem(getBoothStorageKey(company, booth));
-      if (!raw) {
-        banner.style.display = "none";
-        return;
-      }
-      const parsed = JSON.parse(raw);
-      infoEl.textContent =
-        "[" + company + " · " + booth + "] 저장된 점검 내역 (" + (parsed.savedAt || "") + ")";
-      banner.style.display = "flex";
-    } catch (e) {
-      banner.style.display = "none";
-    }
-  }
-
-  // 점검 리스트 및 입력폼 초기화 (점검자 성명·업체명은 다음 가판 연속 점검 편의를 위해 유지)
-  function resetInspectionForm() {
-    answers = Array(QUESTION_COUNT).fill(null);
-    questionPhotos = Array.from({ length: QUESTION_COUNT }, () => []);
-
-    for (let i = 0; i < QUESTION_COUNT; i++) {
-      const btnO = document.getElementById("btn-o-" + i);
-      const btnX = document.getElementById("btn-x-" + i);
-      const inputEl = document.getElementById("photoInput-" + i);
-      if (btnO) btnO.className = "ox-btn";
-      if (btnX) btnX.className = "ox-btn";
-      if (inputEl) inputEl.value = "";
-      renderQuestionPhotos(i);
-    }
-
-    document.getElementById("memoInput").value = "";
-    document.getElementById("boothInput").value = "";
-    checkSavedBoothBanner();
-  }
-
-  function saveBoothInspection() {
-    const company = document.getElementById("companyInput").value.trim();
-    const booth = document.getElementById("boothInput").value.trim();
-    const inspector = document.getElementById("inspectorName").value.trim();
-    const memo = document.getElementById("memoInput").value.trim();
-    const saveStatus = document.getElementById("boothSaveStatus");
-
-    if (!company) {
-      alert("점검 업체를 먼저 입력하거나 선택해 주세요.");
-      document.getElementById("companyInput").focus();
-      return;
-    }
-    if (!booth) {
-      alert("점검할 가판을 먼저 입력하거나 선택해 주세요.");
-      document.getElementById("boothInput").focus();
-      return;
-    }
-
-    const nowStr = new Date().toLocaleString("ko-KR");
-    const payload = {
-      company: company,
-      booth: booth,
-      inspector: inspector,
-      answers: [...answers],
-      questionPhotos: questionPhotos.map(arr => [...arr]),
-      memo: memo,
-      savedAt: nowStr
-    };
-
-    try {
-      localStorage.setItem(getBoothStorageKey(company, booth), JSON.stringify(payload));
-      resetInspectionForm();
-      saveStatus.style.color = "#0f766e";
-      saveStatus.textContent = "✅ [" + company + " - " + booth + "] 저장 완료! 점검 리스트가 초기화되었습니다.";
-    } catch (err) {
-      console.error("가판 저장 실패:", err);
-      saveStatus.style.color = "#dc2626";
-      saveStatus.textContent = "❌ 저장 공간(localStorage) 한도를 초과했습니다. 사진 수를 줄여 다시 시도해 주세요.";
-    }
-  }
-
-  function loadSavedBoothInspection() {
-    const company = document.getElementById("companyInput").value.trim();
-    const booth = document.getElementById("boothInput").value.trim();
-    const saveStatus = document.getElementById("boothSaveStatus");
-
-    if (!company || !booth) return;
-
-    try {
-      const raw = localStorage.getItem(getBoothStorageKey(company, booth));
-      if (!raw) return;
-      const data = JSON.parse(raw);
-
-      if (data.inspector) {
-        document.getElementById("inspectorName").value = data.inspector;
-      }
-      document.getElementById("memoInput").value = data.memo || "";
-
-      answers = Array.isArray(data.answers) && data.answers.length === QUESTION_COUNT
-        ? [...data.answers]
-        : Array(QUESTION_COUNT).fill(null);
-
-      for (let i = 0; i < QUESTION_COUNT; i++) {
-        const val = answers[i];
-        document.getElementById("btn-o-" + i).className = "ox-btn" + (val === "O" ? " active-o" : "");
-        document.getElementById("btn-x-" + i).className = "ox-btn" + (val === "X" ? " active-x" : "");
-      }
-
-      questionPhotos = Array.from({ length: QUESTION_COUNT }, (_, idx) =>
-        Array.isArray(data.questionPhotos?.[idx]) ? [...data.questionPhotos[idx]] : []
-      );
-
-      for (let i = 0; i < QUESTION_COUNT; i++) {
-        renderQuestionPhotos(i);
-      }
-
-      saveStatus.style.color = "#1d4ed8";
-      saveStatus.textContent = "📂 [" + company + " - " + booth + "] 저장된 점검 내역을 불러왔습니다.";
-    } catch (err) {
-      console.error("불러오기 실패:", err);
-      alert("저장된 데이터를 불러오는 중 오류가 발생했습니다.");
-    }
-  }
-
-  function deleteSavedBoothInspection() {
-    const company = document.getElementById("companyInput").value.trim();
-    const booth = document.getElementById("boothInput").value.trim();
-    const saveStatus = document.getElementById("boothSaveStatus");
-
-    if (!company || !booth) return;
-    localStorage.removeItem(getBoothStorageKey(company, booth));
-    checkSavedBoothBanner();
-    saveStatus.style.color = "#64748b";
-    saveStatus.textContent = "🗑️ [" + company + " - " + booth + "] 저장된 점검 내역을 삭제했습니다.";
-  }
+  const answers = Array(QUESTION_COUNT).fill(null);
+  const questionPhotos = Array.from({ length: QUESTION_COUNT }, () => []);
 
   function selectOX(index, val) {
     answers[index] = val;
@@ -920,125 +684,6 @@
     return String(str || "").trim().replace(/[\\/:*?"<>|]/g, "_");
   }
 
-  async function renderCompanyPdfBase64(companyName, inspectorName, dateStr, boothRecords, qTexts) {
-    document.getElementById("pdfTitle").textContent = "일일 안전 점검 결과 보고서 (" + companyName + ")";
-    document.getElementById("pdfCompany").textContent = companyName;
-    document.getElementById("pdfInspector").textContent = inspectorName || "-";
-    document.getElementById("pdfBoothCount").textContent = boothRecords.length + "개 가판";
-    document.getElementById("pdfDate").textContent = dateStr;
-
-    const sectionsContainer = document.getElementById("pdfBoothSections");
-    sectionsContainer.innerHTML = "";
-
-    boothRecords.forEach((rec) => {
-      const section = document.createElement("div");
-      section.className = "pdf-booth-section";
-
-      const header = document.createElement("div");
-      header.className = "pdf-booth-header";
-      header.textContent =
-        "가판: " + rec.booth +
-        (rec.inspector ? "  |  점검자: " + rec.inspector : "") +
-        (rec.savedAt ? "  |  저장시각: " + rec.savedAt : "");
-      section.appendChild(header);
-
-      const table = document.createElement("table");
-      table.innerHTML =
-        "<thead><tr>" +
-          "<th style='width:50px;'>번호</th>" +
-          "<th>점검 항목</th>" +
-          "<th style='width:65px;'>결과</th>" +
-        "</tr></thead>";
-
-      const tbody = document.createElement("tbody");
-      const recAnswers = Array.isArray(rec.answers) ? rec.answers : [];
-      const recPhotos = Array.isArray(rec.questionPhotos) ? rec.questionPhotos : [];
-
-      let boothHasPhoto = false;
-      const photoBlocks = [];
-
-      qTexts.forEach((el, idx) => {
-        const cleanText = el.textContent.replace(/^\d+\.\s*/, "");
-        const ansVal = recAnswers[idx] || "-";
-        const ansColor = ansVal === "O" ? "#2563eb" : (ansVal === "X" ? "#dc2626" : "#475569");
-
-        const tr = document.createElement("tr");
-        tr.innerHTML =
-          "<td style='text-align:center;'>" + (idx + 1) + "</td>" +
-          "<td>" + cleanText + "</td>" +
-          "<td class='ans' style='color:" + ansColor + "'>" + ansVal + "</td>";
-        tbody.appendChild(tr);
-
-        const photosForQ = Array.isArray(recPhotos[idx]) ? recPhotos[idx] : [];
-        if (photosForQ.length > 0) {
-          boothHasPhoto = true;
-          const block = document.createElement("div");
-          block.className = "pdf-q-photo-block";
-
-          const title = document.createElement("div");
-          title.className = "pdf-q-photo-title";
-          title.textContent = (idx + 1) + ". " + cleanText + " (" + photosForQ.length + "장)";
-
-          const grid = document.createElement("div");
-          grid.className = "pdf-q-photo-grid";
-
-          photosForQ.forEach((dataUrl, pIdx) => {
-            const img = document.createElement("img");
-            img.src = dataUrl;
-            img.alt = rec.booth + " " + (idx + 1) + "번 사진 " + (pIdx + 1);
-            grid.appendChild(img);
-          });
-
-          block.appendChild(title);
-          block.appendChild(grid);
-          photoBlocks.push(block);
-        }
-      });
-
-      table.appendChild(tbody);
-      section.appendChild(table);
-
-      const memoBox = document.createElement("div");
-      memoBox.className = "pdf-memo-box";
-      memoBox.innerHTML =
-        "<div style='font-weight:bold; margin-bottom:3px;'>[특이사항 메모]</div>" +
-        "<div>" + (rec.memo ? rec.memo : "특이사항 없음") + "</div>";
-      section.appendChild(memoBox);
-
-      const photoArea = document.createElement("div");
-      const photoLabel = document.createElement("div");
-      photoLabel.style.cssText = "font-weight:bold; font-size:12.5px; margin-bottom:6px;";
-      photoLabel.textContent = "[현장 첨부 사진]";
-      photoArea.appendChild(photoLabel);
-
-      if (!boothHasPhoto) {
-        const emptyMsg = document.createElement("div");
-        emptyMsg.style.cssText = "font-size:12px; color:#555;";
-        emptyMsg.textContent = "첨부된 현장 사진 없음";
-        photoArea.appendChild(emptyMsg);
-      } else {
-        photoBlocks.forEach(b => photoArea.appendChild(b));
-      }
-
-      section.appendChild(photoArea);
-      sectionsContainer.appendChild(section);
-    });
-
-    await new Promise(resolve => setTimeout(resolve, 120));
-
-    const reportEl = document.getElementById("pdfReport");
-    const canvas = await html2canvas(reportEl, { scale: 1.5, useCORS: true });
-    const imgData = canvas.toDataURL("image/jpeg", 0.85);
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
-
-    return pdf.output("datauristring").split(",")[1];
-  }
-
   function triggerBase64PdfDownload(base64Str, fileName) {
     const byteChars = atob(base64Str);
     const byteNumbers = new Array(byteChars.length);
@@ -1057,127 +702,136 @@
   }
 
   async function generateAndSend() {
-    const inputInspector = document.getElementById("inspectorName").value.trim();
-    const inputCompany = document.getElementById("companyInput").value.trim();
-    const inputBooth = document.getElementById("boothInput").value.trim();
-    const inputMemo = document.getElementById("memoInput").value.trim();
+    const company = document.getElementById("companyInput").value.trim();
+    const booth = document.getElementById("boothInput").value.trim();
+    const inspector = document.getElementById("inspectorName").value.trim();
+    const memo = document.getElementById("memoInput").value.trim();
     const statusMsg = document.getElementById("statusMsg");
     const submitBtn = document.getElementById("submitBtn");
 
-    let allRecords = getAllSavedBoothInspections();
-
-    if (allRecords.length === 0) {
-      if (!inputCompany) {
-        alert("저장된 가판 점검 내역이 없습니다. 점검 업체를 입력하거나 선택해 주세요.");
-        document.getElementById("companyInput").focus();
-        return;
-      }
-      if (!inputBooth) {
-        alert("저장된 가판 점검 내역이 없습니다. 점검할 가판을 입력하거나 선택해 주세요.");
-        document.getElementById("boothInput").focus();
-        return;
-      }
-      if (!inputInspector) {
-        alert("점검자 성명을 입력해 주세요.");
-        document.getElementById("inspectorName").focus();
-        return;
-      }
-      if (answers.includes(null)) {
-        alert("10개 항목 모두 O 또는 X를 선택해 주세요.");
-        return;
-      }
-      allRecords = [{
-        company: inputCompany,
-        booth: inputBooth,
-        inspector: inputInspector,
-        answers: [...answers],
-        questionPhotos: questionPhotos.map(arr => [...arr]),
-        memo: inputMemo,
-        savedAt: new Date().toLocaleString("ko-KR")
-      }];
-    } else if (!inputInspector) {
-      const hasAnyInspector = allRecords.some(r => r.inspector && r.inspector.trim());
-      if (!hasAnyInspector) {
-        alert("점검자 성명을 입력해 주세요.");
-        document.getElementById("inspectorName").focus();
-        return;
-      }
+    if (!company) {
+      alert("점검 업체를 입력하거나 선택해 주세요.");
+      document.getElementById("companyInput").focus();
+      return;
+    }
+    if (!booth) {
+      alert("점검할 가판을 입력하거나 선택해 주세요.");
+      document.getElementById("boothInput").focus();
+      return;
+    }
+    if (!inspector) {
+      alert("점검자 성명을 입력해 주세요.");
+      document.getElementById("inspectorName").focus();
+      return;
+    }
+    if (answers.includes(null)) {
+      alert("10개 항목 모두 O 또는 X를 선택해 주세요.");
+      return;
     }
 
     submitBtn.disabled = true;
     statusMsg.style.color = "#2563eb";
-    statusMsg.innerText = "업체별 PDF 생성 및 이메일 전송 중입니다...";
+    statusMsg.innerText = "PDF 생성 및 이메일 전송 중입니다...";
 
     try {
       const now = new Date();
       const yymmdd = getYYMMDD(now);
       const dateStr = now.toLocaleString("ko-KR");
-      const qTexts = document.querySelectorAll("#questionsContainer .question-text");
 
-      const groupedByCompany = new Map();
-      allRecords.forEach((rec) => {
-        const comp = rec.company.trim();
-        if (!groupedByCompany.has(comp)) {
-          groupedByCompany.set(comp, []);
+      document.getElementById("pdfCompany").textContent = company;
+      document.getElementById("pdfBooth").textContent = booth;
+      document.getElementById("pdfInspector").textContent = inspector;
+      document.getElementById("pdfDate").textContent = dateStr;
+
+      const qTexts = document.querySelectorAll("#questionsContainer .question-text");
+      const tbody = document.getElementById("pdfTableBody");
+      const pdfPhotoList = document.getElementById("pdfPhotoList");
+      tbody.innerHTML = "";
+      pdfPhotoList.innerHTML = "";
+
+      let hasAnyPhoto = false;
+
+      qTexts.forEach((el, idx) => {
+        const cleanText = el.textContent.replace(/^\d+\.\s*/, "");
+        const ansColor = answers[idx] === "O" ? "#2563eb" : "#dc2626";
+        tbody.innerHTML +=
+          "<tr>" +
+            "<td style='text-align:center;'>" + (idx + 1) + "</td>" +
+            "<td>" + cleanText + "</td>" +
+            "<td class='ans' style='color:" + ansColor + "'>" + answers[idx] + "</td>" +
+          "</tr>";
+
+        const photos = questionPhotos[idx];
+        if (photos && photos.length > 0) {
+          hasAnyPhoto = true;
+          const block = document.createElement("div");
+          block.className = "pdf-q-photo-block";
+
+          const title = document.createElement("div");
+          title.className = "pdf-q-photo-title";
+          title.textContent = (idx + 1) + ". " + cleanText + " (" + photos.length + "장)";
+
+          const grid = document.createElement("div");
+          grid.className = "pdf-q-photo-grid";
+
+          photos.forEach((dataUrl, pIdx) => {
+            const img = document.createElement("img");
+            img.src = dataUrl;
+            img.alt = (idx + 1) + "번 사진 " + (pIdx + 1);
+            grid.appendChild(img);
+          });
+
+          block.appendChild(title);
+          block.appendChild(grid);
+          pdfPhotoList.appendChild(block);
         }
-        groupedByCompany.get(comp).push(rec);
       });
 
-      const generatedFiles = [];
-
-      for (const [companyName, boothList] of groupedByCompany.entries()) {
-        const recordInspector = boothList.find(r => r.inspector && r.inspector.trim())?.inspector.trim() || "";
-        const effectiveInspector = inputInspector || recordInspector || "미기재";
-
-        const pdfBase64 = await renderCompanyPdfBase64(
-          companyName,
-          effectiveInspector,
-          dateStr,
-          boothList,
-          qTexts
-        );
-
-        const fileName =
-          yymmdd +
-          sanitizeFilePart(companyName) +
-          sanitizeFilePart(effectiveInspector) +
-          ".pdf";
-
-        generatedFiles.push({
-          company: companyName,
-          inspector: effectiveInspector,
-          boothCount: boothList.length,
-          fileName: fileName,
-          pdfBase64: pdfBase64
-        });
-
-        triggerBase64PdfDownload(pdfBase64, fileName);
-        await new Promise(resolve => setTimeout(resolve, 250));
+      if (!hasAnyPhoto) {
+        pdfPhotoList.innerHTML = '<div style="font-size:12.5px; color:#555; padding:6px 0;">첨부된 현장 사진 없음</div>';
       }
 
-      const representativeInspector =
-        inputInspector || generatedFiles[0]?.inspector || "미기재";
+      document.getElementById("pdfMemoText").textContent = memo ? memo : "특이사항 없음";
+
+      await new Promise(resolve => setTimeout(resolve, 120));
+
+      const reportEl = document.getElementById("pdfReport");
+      const canvas = await html2canvas(reportEl, { scale: 1.5, useCORS: true });
+      const imgData = canvas.toDataURL("image/jpeg", 0.85);
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+
+      const pdfBase64 = pdf.output("datauristring").split(",")[1];
+      const fileName =
+        yymmdd +
+        sanitizeFilePart(company) +
+        sanitizeFilePart(inspector) +
+        ".pdf";
+
+      triggerBase64PdfDownload(pdfBase64, fileName);
 
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          inspector: representativeInspector,
+          inspector: inspector,
+          company: company,
+          booth: booth,
           date: dateStr,
-          yymmdd: yymmdd,
-          companyCount: generatedFiles.length,
-          fileNames: generatedFiles.map(f => f.fileName),
-          files: generatedFiles
+          fileName: fileName,
+          pdfBase64: pdfBase64
         })
       });
 
       statusMsg.style.color = "#16a34a";
       statusMsg.innerHTML =
-        "✅ 총 <b>" + generatedFiles.length + "개 업체</b> PDF 생성 및 메일 전송 요청이 완료되었습니다!<br>" +
-        "<span style='font-size:12.5px; color:#334155;'>파일: " +
-        generatedFiles.map(f => f.fileName).join(", ") +
-        "</span>";
+        "✅ [" + company + " - " + booth + "] 점검 결과 저장 및 메일 전송 요청이 완료되었습니다!<br>" +
+        "<span style='font-size:12.5px; color:#334155;'>파일명: " + fileName + "</span>";
     } catch (error) {
       console.error(error);
       statusMsg.style.color = "#dc2626";
@@ -1188,7 +842,6 @@
   }
 
   initTargetInputs();
-  checkSavedBoothBanner();
 </script>
 
 </body>
