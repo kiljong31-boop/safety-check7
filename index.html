@@ -979,9 +979,8 @@
     });
   }
 
-  function resetCurrentForm(keepCompany = false) {
-    const prevCompany = keepCompany ? document.getElementById("companyInput").value : "";
-    document.getElementById("companyInput").value = prevCompany;
+  function resetCurrentForm() {
+    document.getElementById("companyInput").value = "";
     document.getElementById("boothInput").value = "";
     document.getElementById("memoInput").value = "";
 
@@ -1067,13 +1066,13 @@
     }
 
     renderSavedBoothsList();
-    resetCurrentForm(true);
+    resetCurrentForm();
 
     const statusMsg = document.getElementById("statusMsg");
     statusMsg.style.color = "#0f766e";
     statusMsg.innerHTML =
-      "💾 [" + record.company + " - " + record.booth + "] 점검 결과가 저장되었습니다.<br>" +
-      "<span style='font-size:12.5px; color:#334155;'>다른 가판을 이어서 점검하거나 '업체별 PDF 생성 및 이메일 전송'을 눌러주세요.</span>";
+      "💾 [" + record.company + " - " + record.booth + "] 점검 결과가 저장되고 입력란이 초기화되었습니다.<br>" +
+      "<span style='font-size:12.5px; color:#334155;'>다른 업체·가판을 이어서 점검하거나 '업체별 PDF 생성 및 이메일 전송'을 눌러주세요.</span>";
   }
 
   function removeSavedBooth(index) {
@@ -1265,6 +1264,16 @@
     return pdf.output("datauristring").split(",")[1];
   }
 
+  async function sendSingleCompanyPayload(payload) {
+    const res = await fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    return res;
+  }
+
   async function generateAndSendByCompany() {
     const statusMsg = document.getElementById("statusMsg");
     const submitBtn = document.getElementById("submitBtn");
@@ -1304,19 +1313,19 @@
     submitBtn.disabled = true;
     saveBoothBtn.disabled = true;
     statusMsg.style.color = "#2563eb";
-    statusMsg.innerText = "업체별 PDF 생성 및 이메일 일괄 전송 중입니다...";
+    statusMsg.innerText = "업체별 PDF 생성 및 이메일 전송 중입니다...";
 
     try {
       const now = new Date();
       const yymmdd = getYYMMDD(now);
       const dateStr = now.toLocaleString("ko-KR");
       const companyEntries = Array.from(companyMap.entries());
-      const companyReports = [];
+      const sentFileNames = [];
 
       for (let i = 0; i < companyEntries.length; i++) {
         const [companyName, boothList] = companyEntries[i];
         statusMsg.innerText =
-          "업체별 PDF 생성 중 (" + (i + 1) + " / " + companyEntries.length + "): " + companyName + "...";
+          "업체별 PDF 생성 및 전송 중 (" + (i + 1) + " / " + companyEntries.length + "): " + companyName + "...";
 
         buildCompanyPdfDom(companyName, boothList, dateStr);
         const pdfBase64 = await createPdfBase64FromCurrentDom();
@@ -1326,40 +1335,32 @@
           sanitizeFilePart(INSPECTOR_NAME) +
           ".pdf";
 
-        companyReports.push({
+        const boothNames = boothList.map(b => b.booth);
+        const boothSummary = boothNames.join(", ");
+
+        await sendSingleCompanyPayload({
           inspector: INSPECTOR_NAME,
           company: companyName,
-          booths: boothList.map(b => b.booth),
+          booth: boothSummary,
+          booths: boothNames,
           boothCount: boothList.length,
           date: dateStr,
           fileName: fileName,
           pdfBase64: pdfBase64
         });
+
+        sentFileNames.push(fileName);
+        await new Promise(resolve => setTimeout(resolve, 350));
       }
 
-      statusMsg.innerText = "생성된 업체별 PDF(" + companyReports.length + "개)를 이메일로 전송 중입니다...";
-
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          inspector: INSPECTOR_NAME,
-          date: dateStr,
-          companyCount: companyReports.length,
-          reports: companyReports
-        })
-      });
-
-      const fileNamesText = companyReports.map(r => r.fileName).join(", ");
       savedBoothRecords = [];
       renderSavedBoothsList();
-      resetCurrentForm(false);
+      resetCurrentForm();
 
       statusMsg.style.color = "#16a34a";
       statusMsg.innerHTML =
-        "✅ 총 " + companyReports.length + "개 업체 PDF 생성 및 이메일 전송 요청이 완료되었으며 목록이 초기화되었습니다.<br>" +
-        "<span style='font-size:12.5px; color:#334155;'>생성 파일: " + escapeHtml(fileNamesText) + "</span>";
+        "✅ 총 " + sentFileNames.length + "개 업체 PDF 생성 및 이메일 전송 요청이 완료되었으며 목록이 초기화되었습니다.<br>" +
+        "<span style='font-size:12.5px; color:#334155;'>전송 파일: " + escapeHtml(sentFileNames.join(", ")) + "</span>";
     } catch (error) {
       console.error(error);
       statusMsg.style.color = "#dc2626";
