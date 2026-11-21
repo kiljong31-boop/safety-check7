@@ -11,6 +11,7 @@
   <style>
     :root {
       --primary: #2563eb;
+      --secondary: #0f766e;
       --danger: #dc2626;
       --bg: #f8fafc;
       --card: #ffffff;
@@ -158,7 +159,106 @@
       resize: vertical;
     }
 
-    .submit-btn { width: 100%; margin-top: 20px; padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; }
+    .save-booth-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px 14px;
+      background: var(--secondary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .save-booth-btn:hover { background: #115e59; }
+    .save-booth-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    .saved-panel {
+      margin-top: 18px;
+      padding: 14px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+    }
+    .saved-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .saved-badge {
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .saved-empty {
+      font-size: 12.5px;
+      color: #64748b;
+      text-align: center;
+      padding: 10px 0;
+    }
+    .saved-company-group {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+    .saved-company-group:last-child { margin-bottom: 0; }
+    .saved-company-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1d4ed8;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .saved-booth-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 0;
+      border-top: 1px dashed #e2e8f0;
+      font-size: 12.5px;
+    }
+    .saved-booth-row:first-of-type { border-top: none; padding-top: 0; }
+    .saved-booth-info { flex: 1; line-height: 1.35; }
+    .saved-booth-meta { font-size: 11.5px; color: #64748b; }
+    .saved-del-btn {
+      border: 1px solid #fecaca;
+      background: #fef2f2;
+      color: #dc2626;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 14px;
+      padding: 14px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .submit-btn:hover { background: #1d4ed8; }
     .submit-btn:disabled { background: #94a3b8; cursor: not-allowed; }
     #statusMsg { margin-top: 12px; text-align: center; font-size: 14px; font-weight: 600; line-height: 1.5; }
 
@@ -175,30 +275,48 @@
       background: #f1f5f9;
       border: 1px solid #333;
       padding: 10px 14px;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       font-size: 13.5px;
       font-weight: bold;
     }
-    #pdfReport table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 13px; }
+    .pdf-booth-section {
+      border: 1.5px solid #333;
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin-bottom: 18px;
+      background: #fff;
+    }
+    .pdf-booth-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #e2e8f0;
+      padding: 7px 10px;
+      border: 1px solid #333;
+      font-size: 13.5px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    #pdfReport table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 13px; }
     #pdfReport th, #pdfReport td { border: 1px solid #333; padding: 7px 10px; text-align: left; }
     #pdfReport th { background: #f1f5f9; text-align: center; }
     #pdfReport td.ans { text-align: center; font-weight: bold; width: 60px; }
 
     .pdf-memo-box {
       border: 1px solid #333;
-      padding: 10px 12px;
-      margin-bottom: 14px;
+      padding: 9px 12px;
+      margin-bottom: 10px;
       font-size: 13px;
       background: #fafafa;
       white-space: pre-wrap;
       line-height: 1.5;
     }
-    #pdfPhotoArea { margin-top: 10px; }
+    .pdf-photo-area { margin-top: 8px; }
     .pdf-q-photo-block {
       border: 1px solid #cbd5e1;
       border-radius: 6px;
       padding: 8px 10px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       background: #fff;
     }
     .pdf-q-photo-title {
@@ -456,37 +574,32 @@
     <textarea id="memoInput" placeholder="X 항목 조치 내용이나 현장 특이사항이 있으면 입력하세요."></textarea>
   </div>
 
-  <button type="button" id="submitBtn" class="submit-btn" onclick="generateAndSend()">PDF 생성 및 이메일 전송</button>
+  <button type="button" id="saveBoothBtn" class="save-booth-btn" onclick="saveCurrentBoothResult()">💾 현재 가판점검 결과 저장</button>
+
+  <div class="saved-panel">
+    <div class="saved-panel-header">
+      <span>저장된 가판 점검 내역 (업체별 묶음)</span>
+      <span class="saved-badge" id="savedCountBadge">0개 가판</span>
+    </div>
+    <div id="savedBoothsList">
+      <div class="saved-empty">저장된 가판 점검 결과가 없습니다. 가판 점검 후 '현재 가판점검 결과 저장'을 눌러주세요.</div>
+    </div>
+  </div>
+
+  <button type="button" id="submitBtn" class="submit-btn" onclick="generateAndSendByCompany()">업체별 PDF 생성 및 이메일 전송</button>
   <div id="statusMsg"></div>
 </div>
 
-<!-- PDF 변환용 템플릿 -->
+<!-- PDF 변환용 템플릿 (업체별 다중 가판 보고서) -->
 <div id="pdfReport">
   <h2>일일 안전 점검 결과 보고서</h2>
   <div class="pdf-info-box">
     <span>점검 업체: <span id="pdfCompany">-</span></span>
-    <span>점검 가판: <span id="pdfBooth">-</span></span>
+    <span>점검 가판 수: <span id="pdfBoothCount">0개</span></span>
     <span>점검자 성명: <span id="pdfInspector">-</span></span>
     <span>점검 일시: <span id="pdfDate">-</span></span>
   </div>
-  <table>
-    <thead>
-      <tr>
-        <th style="width: 50px;">번호</th>
-        <th>점검 항목</th>
-        <th style="width: 70px;">결과</th>
-      </tr>
-    </thead>
-    <tbody id="pdfTableBody"></tbody>
-  </table>
-  <div class="pdf-memo-box">
-    <div style="font-weight:bold; margin-bottom:4px;">[특이사항 메모]</div>
-    <div id="pdfMemoText"></div>
-  </div>
-  <div id="pdfPhotoArea">
-    <p style="font-weight:bold; text-align:left; font-size:13px; margin-bottom:6px;">[항목별 현장 첨부 사진]</p>
-    <div id="pdfPhotoList"></div>
-  </div>
+  <div id="pdfBoothsContainer"></div>
 </div>
 
 <script>
@@ -536,6 +649,9 @@
     { no: 33, company: "쥬시", booth: "쿠치나(장미원)" },
     { no: 34, company: "카페아모제", booth: "아모제" }
   ];
+
+  // 가판별 임시 저장소
+  let savedBoothRecords = [];
 
   function getCompanyEntries() {
     const map = new Map();
@@ -863,8 +979,9 @@
     });
   }
 
-  function resetInspectionForm() {
-    document.getElementById("companyInput").value = "";
+  function resetCurrentForm(keepCompany = false) {
+    const prevCompany = keepCompany ? document.getElementById("companyInput").value : "";
+    document.getElementById("companyInput").value = prevCompany;
     document.getElementById("boothInput").value = "";
     document.getElementById("memoInput").value = "";
 
@@ -886,7 +1003,149 @@
     closeAllDropdowns();
     renderCompanyDropdown("", true);
     renderBoothDropdown("", true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function hasAnyDraftInput() {
+    const company = document.getElementById("companyInput").value.trim();
+    const booth = document.getElementById("boothInput").value.trim();
+    const memo = document.getElementById("memoInput").value.trim();
+    const hasAnswer = answers.some(a => a !== null);
+    const hasPhoto = questionPhotos.some(list => list && list.length > 0);
+    return Boolean(company || booth || memo || hasAnswer || hasPhoto);
+  }
+
+  function buildCurrentBoothRecord() {
+    const company = document.getElementById("companyInput").value.trim();
+    const booth = document.getElementById("boothInput").value.trim();
+    const memo = document.getElementById("memoInput").value.trim();
+
+    if (!company) {
+      alert("점검 업체를 입력하거나 선택해 주세요.");
+      document.getElementById("companyInput").focus();
+      return null;
+    }
+    if (!booth) {
+      alert("점검할 가판을 입력하거나 선택해 주세요.");
+      document.getElementById("boothInput").focus();
+      return null;
+    }
+    if (answers.includes(null)) {
+      alert("10개 항목 모두 O 또는 X를 선택해 주세요.");
+      return null;
+    }
+
+    const qTexts = Array.from(document.querySelectorAll("#questionsContainer .question-text")).map(el =>
+      el.textContent.replace(/^\d+\.\s*/, "")
+    );
+
+    return {
+      company: company,
+      booth: booth,
+      inspector: INSPECTOR_NAME,
+      memo: memo,
+      answers: answers.slice(),
+      questionTexts: qTexts,
+      photos: questionPhotos.map(list => list.slice()),
+      savedAt: new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })
+    };
+  }
+
+  function saveCurrentBoothResult() {
+    const record = buildCurrentBoothRecord();
+    if (!record) return;
+
+    const existingIdx = savedBoothRecords.findIndex(
+      item =>
+        item.company.toLowerCase() === record.company.toLowerCase() &&
+        item.booth.toLowerCase() === record.booth.toLowerCase()
+    );
+
+    if (existingIdx >= 0) {
+      savedBoothRecords[existingIdx] = record;
+    } else {
+      savedBoothRecords.push(record);
+    }
+
+    renderSavedBoothsList();
+    resetCurrentForm(true);
+
+    const statusMsg = document.getElementById("statusMsg");
+    statusMsg.style.color = "#0f766e";
+    statusMsg.innerHTML =
+      "💾 [" + record.company + " - " + record.booth + "] 점검 결과가 저장되었습니다.<br>" +
+      "<span style='font-size:12.5px; color:#334155;'>다른 가판을 이어서 점검하거나 '업체별 PDF 생성 및 이메일 전송'을 눌러주세요.</span>";
+  }
+
+  function removeSavedBooth(index) {
+    savedBoothRecords.splice(index, 1);
+    renderSavedBoothsList();
+  }
+
+  function renderSavedBoothsList() {
+    const badge = document.getElementById("savedCountBadge");
+    const container = document.getElementById("savedBoothsList");
+    badge.textContent = savedBoothRecords.length + "개 가판";
+
+    if (savedBoothRecords.length === 0) {
+      container.innerHTML =
+        '<div class="saved-empty">저장된 가판 점검 결과가 없습니다. 가판 점검 후 \'현재 가판점검 결과 저장\'을 눌러주세요.</div>';
+      return;
+    }
+
+    const grouped = new Map();
+    savedBoothRecords.forEach((rec, idx) => {
+      if (!grouped.has(rec.company)) {
+        grouped.set(rec.company, []);
+      }
+      grouped.get(rec.company).push({ rec, idx });
+    });
+
+    container.innerHTML = "";
+    grouped.forEach((entries, companyName) => {
+      const groupEl = document.createElement("div");
+      groupEl.className = "saved-company-group";
+
+      const titleEl = document.createElement("div");
+      titleEl.className = "saved-company-title";
+      titleEl.innerHTML =
+        "<span>🏢 " + escapeHtml(companyName) + "</span>" +
+        "<span style='font-size:11.5px; color:#475569;'>" + entries.length + "개 가판 PDF</span>";
+      groupEl.appendChild(titleEl);
+
+      entries.forEach(({ rec, idx }) => {
+        const xCount = rec.answers.filter(a => a === "X").length;
+        const photoTotal = rec.photos.reduce((sum, list) => sum + list.length, 0);
+
+        const rowEl = document.createElement("div");
+        rowEl.className = "saved-booth-row";
+
+        const infoEl = document.createElement("div");
+        infoEl.className = "saved-booth-info";
+        infoEl.innerHTML =
+          "<div><strong>" + escapeHtml(rec.booth) + "</strong></div>" +
+          "<div class='saved-booth-meta'>X " + xCount + "건 · 사진 " + photoTotal + "장 · 저장 " + escapeHtml(rec.savedAt) + "</div>";
+
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "saved-del-btn";
+        delBtn.textContent = "삭제";
+        delBtn.onclick = () => removeSavedBooth(idx);
+
+        rowEl.appendChild(infoEl);
+        rowEl.appendChild(delBtn);
+        groupEl.appendChild(rowEl);
+      });
+
+      container.appendChild(groupEl);
+    });
+  }
+
+  function escapeHtml(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
 
   function getYYMMDD(dateObj) {
@@ -900,70 +1159,54 @@
     return String(str || "").trim().replace(/[\\/:*?"<>|]/g, "_");
   }
 
-  async function generateAndSend() {
-    const company = document.getElementById("companyInput").value.trim();
-    const booth = document.getElementById("boothInput").value.trim();
-    const inspector = INSPECTOR_NAME;
-    const memo = document.getElementById("memoInput").value.trim();
-    const statusMsg = document.getElementById("statusMsg");
-    const submitBtn = document.getElementById("submitBtn");
+  function buildCompanyPdfDom(companyName, boothList, dateStr) {
+    document.getElementById("pdfCompany").textContent = companyName;
+    document.getElementById("pdfBoothCount").textContent = boothList.length + "개";
+    document.getElementById("pdfInspector").textContent = INSPECTOR_NAME;
+    document.getElementById("pdfDate").textContent = dateStr;
 
-    if (!company) {
-      alert("점검 업체를 입력하거나 선택해 주세요.");
-      document.getElementById("companyInput").focus();
-      return;
-    }
-    if (!booth) {
-      alert("점검할 가판을 입력하거나 선택해 주세요.");
-      document.getElementById("boothInput").focus();
-      return;
-    }
-    if (answers.includes(null)) {
-      alert("10개 항목 모두 O 또는 X를 선택해 주세요.");
-      return;
-    }
+    const boothsContainer = document.getElementById("pdfBoothsContainer");
+    boothsContainer.innerHTML = "";
 
-    submitBtn.disabled = true;
-    statusMsg.style.color = "#2563eb";
-    statusMsg.innerText = "PDF 생성 및 이메일 전송 중입니다...";
+    boothList.forEach((rec, bIdx) => {
+      const section = document.createElement("div");
+      section.className = "pdf-booth-section";
 
-    try {
-      const now = new Date();
-      const yymmdd = getYYMMDD(now);
-      const dateStr = now.toLocaleString("ko-KR");
+      const header = document.createElement("div");
+      header.className = "pdf-booth-header";
+      header.innerHTML =
+        "<span>가판 " + (bIdx + 1) + ". " + escapeHtml(rec.booth) + "</span>" +
+        "<span>점검자: " + escapeHtml(INSPECTOR_NAME) + "</span>";
+      section.appendChild(header);
 
-      document.getElementById("pdfCompany").textContent = company;
-      document.getElementById("pdfBooth").textContent = booth;
-      document.getElementById("pdfInspector").textContent = inspector;
-      document.getElementById("pdfDate").textContent = dateStr;
-
-      const qTexts = document.querySelectorAll("#questionsContainer .question-text");
-      const tbody = document.getElementById("pdfTableBody");
-      const pdfPhotoList = document.getElementById("pdfPhotoList");
-      tbody.innerHTML = "";
-      pdfPhotoList.innerHTML = "";
+      const table = document.createElement("table");
+      table.innerHTML =
+        "<thead><tr><th style='width:50px;'>번호</th><th>점검 항목</th><th style='width:70px;'>결과</th></tr></thead><tbody></tbody>";
+      const tbody = table.querySelector("tbody");
 
       let hasAnyPhoto = false;
+      const photoBlocks = [];
 
-      qTexts.forEach((el, idx) => {
-        const cleanText = el.textContent.replace(/^\d+\.\s*/, "");
-        const ansColor = answers[idx] === "O" ? "#2563eb" : "#dc2626";
-        tbody.innerHTML +=
-          "<tr>" +
-            "<td style='text-align:center;'>" + (idx + 1) + "</td>" +
-            "<td>" + cleanText + "</td>" +
-            "<td class='ans' style='color:" + ansColor + "'>" + answers[idx] + "</td>" +
-          "</tr>";
+      rec.questionTexts.forEach((cleanText, qIdx) => {
+        const ans = rec.answers[qIdx];
+        const ansColor = ans === "O" ? "#2563eb" : "#dc2626";
 
-        const photos = questionPhotos[idx];
-        if (photos && photos.length > 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML =
+          "<td style='text-align:center;'>" + (qIdx + 1) + "</td>" +
+          "<td>" + escapeHtml(cleanText) + "</td>" +
+          "<td class='ans' style='color:" + ansColor + "'>" + escapeHtml(ans) + "</td>";
+        tbody.appendChild(tr);
+
+        const photos = rec.photos[qIdx] || [];
+        if (photos.length > 0) {
           hasAnyPhoto = true;
           const block = document.createElement("div");
           block.className = "pdf-q-photo-block";
 
           const title = document.createElement("div");
           title.className = "pdf-q-photo-title";
-          title.textContent = (idx + 1) + ". " + cleanText + " (" + photos.length + "장)";
+          title.textContent = (qIdx + 1) + ". " + cleanText + " (" + photos.length + "장)";
 
           const grid = document.createElement("div");
           grid.className = "pdf-q-photo-grid";
@@ -971,79 +1214,172 @@
           photos.forEach((dataUrl, pIdx) => {
             const img = document.createElement("img");
             img.src = dataUrl;
-            img.alt = (idx + 1) + "번 사진 " + (pIdx + 1);
+            img.alt = rec.booth + " " + (qIdx + 1) + "번 사진 " + (pIdx + 1);
             grid.appendChild(img);
           });
 
           block.appendChild(title);
           block.appendChild(grid);
-          pdfPhotoList.appendChild(block);
+          photoBlocks.push(block);
         }
       });
 
-      if (!hasAnyPhoto) {
-        pdfPhotoList.innerHTML = '<div style="font-size:12.5px; color:#555; padding:6px 0;">첨부된 현장 사진 없음</div>';
+      section.appendChild(table);
+
+      const memoBox = document.createElement("div");
+      memoBox.className = "pdf-memo-box";
+      memoBox.innerHTML =
+        "<div style='font-weight:bold; margin-bottom:4px;'>[특이사항 메모]</div>" +
+        "<div>" + escapeHtml(rec.memo ? rec.memo : "특이사항 없음") + "</div>";
+      section.appendChild(memoBox);
+
+      const photoArea = document.createElement("div");
+      photoArea.className = "pdf-photo-area";
+      photoArea.innerHTML =
+        "<p style='font-weight:bold; text-align:left; font-size:13px; margin-bottom:6px;'>[항목별 현장 첨부 사진]</p>";
+
+      if (hasAnyPhoto) {
+        photoBlocks.forEach(blk => photoArea.appendChild(blk));
+      } else {
+        photoArea.innerHTML +=
+          '<div style="font-size:12.5px; color:#555; padding:4px 0;">첨부된 현장 사진 없음</div>';
       }
 
-      document.getElementById("pdfMemoText").textContent = memo ? memo : "특이사항 없음";
+      section.appendChild(photoArea);
+      boothsContainer.appendChild(section);
+    });
+  }
 
-      await new Promise(resolve => setTimeout(resolve, 120));
+  async function createPdfBase64FromCurrentDom() {
+    await new Promise(resolve => setTimeout(resolve, 120));
+    const reportEl = document.getElementById("pdfReport");
+    const canvas = await html2canvas(reportEl, { scale: 1.5, useCORS: true });
+    const imgData = canvas.toDataURL("image/jpeg", 0.85);
 
-      const reportEl = document.getElementById("pdfReport");
-      const canvas = await html2canvas(reportEl, { scale: 1.5, useCORS: true });
-      const imgData = canvas.toDataURL("image/jpeg", 0.85);
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
 
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+    return pdf.output("datauristring").split(",")[1];
+  }
 
-      const pdfBase64 = pdf.output("datauristring").split(",")[1];
-      const fileName =
-        yymmdd +
-        sanitizeFilePart(company) +
-        sanitizeFilePart(inspector) +
-        ".pdf";
+  async function generateAndSendByCompany() {
+    const statusMsg = document.getElementById("statusMsg");
+    const submitBtn = document.getElementById("submitBtn");
+    const saveBoothBtn = document.getElementById("saveBoothBtn");
+
+    let workingRecords = savedBoothRecords.slice();
+
+    if (hasAnyDraftInput()) {
+      const currentDraft = buildCurrentBoothRecord();
+      if (!currentDraft) return;
+
+      const existingIdx = workingRecords.findIndex(
+        item =>
+          item.company.toLowerCase() === currentDraft.company.toLowerCase() &&
+          item.booth.toLowerCase() === currentDraft.booth.toLowerCase()
+      );
+      if (existingIdx >= 0) {
+        workingRecords[existingIdx] = currentDraft;
+      } else {
+        workingRecords.push(currentDraft);
+      }
+    }
+
+    if (workingRecords.length === 0) {
+      alert("점검을 완료하고 '현재 가판점검 결과 저장'을 눌러 가판을 추가해 주세요.");
+      return;
+    }
+
+    const companyMap = new Map();
+    workingRecords.forEach(rec => {
+      if (!companyMap.has(rec.company)) {
+        companyMap.set(rec.company, []);
+      }
+      companyMap.get(rec.company).push(rec);
+    });
+
+    submitBtn.disabled = true;
+    saveBoothBtn.disabled = true;
+    statusMsg.style.color = "#2563eb";
+    statusMsg.innerText = "업체별 PDF 생성 및 이메일 일괄 전송 중입니다...";
+
+    try {
+      const now = new Date();
+      const yymmdd = getYYMMDD(now);
+      const dateStr = now.toLocaleString("ko-KR");
+      const companyEntries = Array.from(companyMap.entries());
+      const companyReports = [];
+
+      for (let i = 0; i < companyEntries.length; i++) {
+        const [companyName, boothList] = companyEntries[i];
+        statusMsg.innerText =
+          "업체별 PDF 생성 중 (" + (i + 1) + " / " + companyEntries.length + "): " + companyName + "...";
+
+        buildCompanyPdfDom(companyName, boothList, dateStr);
+        const pdfBase64 = await createPdfBase64FromCurrentDom();
+        const fileName =
+          yymmdd +
+          sanitizeFilePart(companyName) +
+          sanitizeFilePart(INSPECTOR_NAME) +
+          ".pdf";
+
+        companyReports.push({
+          inspector: INSPECTOR_NAME,
+          company: companyName,
+          booths: boothList.map(b => b.booth),
+          boothCount: boothList.length,
+          date: dateStr,
+          fileName: fileName,
+          pdfBase64: pdfBase64
+        });
+      }
+
+      statusMsg.innerText = "생성된 업체별 PDF(" + companyReports.length + "개)를 이메일로 전송 중입니다...";
 
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          inspector: inspector,
-          company: company,
-          booth: booth,
+          inspector: INSPECTOR_NAME,
           date: dateStr,
-          fileName: fileName,
-          pdfBase64: pdfBase64
+          companyCount: companyReports.length,
+          reports: companyReports
         })
       });
 
-      resetInspectionForm();
+      const fileNamesText = companyReports.map(r => r.fileName).join(", ");
+      savedBoothRecords = [];
+      renderSavedBoothsList();
+      resetCurrentForm(false);
 
       statusMsg.style.color = "#16a34a";
       statusMsg.innerHTML =
-        "✅ [" + company + " - " + booth + "] 점검 결과 PDF 생성 및 메일 전송 요청이 완료되었으며 양식이 초기화되었습니다.<br>" +
-        "<span style='font-size:12.5px; color:#334155;'>전송 파일명: " + fileName + "</span>";
+        "✅ 총 " + companyReports.length + "개 업체 PDF 생성 및 이메일 전송 요청이 완료되었으며 목록이 초기화되었습니다.<br>" +
+        "<span style='font-size:12.5px; color:#334155;'>생성 파일: " + escapeHtml(fileNamesText) + "</span>";
     } catch (error) {
       console.error(error);
       statusMsg.style.color = "#dc2626";
-      statusMsg.innerText = "❌ PDF 생성 또는 전송 중 오류가 발생했습니다. 다시 시도해 주세요.";
+      statusMsg.innerText = "❌ 업체별 PDF 생성 또는 전송 중 오류가 발생했습니다. 다시 시도해 주세요.";
     } finally {
       submitBtn.disabled = false;
+      saveBoothBtn.disabled = false;
     }
   }
 
-  function initCombos() {
+  function initApp() {
     renderCompanyDropdown("", true);
     renderBoothDropdown("", true);
+    renderSavedBoothsList();
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initCombos);
+    document.addEventListener("DOMContentLoaded", initApp);
   } else {
-    initCombos();
+    initApp();
   }
 </script>
 
