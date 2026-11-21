@@ -1250,16 +1250,65 @@
   }
 
   async function createPdfBase64FromCurrentDom() {
-    await new Promise(resolve => setTimeout(resolve, 120));
+    await new Promise(resolve => setTimeout(resolve, 150));
     const reportEl = document.getElementById("pdfReport");
-    const canvas = await html2canvas(reportEl, { scale: 1.5, useCORS: true });
-    const imgData = canvas.toDataURL("image/jpeg", 0.85);
+    const canvas = await html2canvas(reportEl, {
+      scale: 1.5,
+      useCORS: true,
+      backgroundColor: "#ffffff"
+    });
 
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF("p", "mm", "a4");
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+    const pageWidthMm = pdf.internal.pageSize.getWidth();
+    const pageHeightMm = pdf.internal.pageSize.getHeight();
+    const imgWidthMm = pageWidthMm;
+    const imgHeightMm = (canvas.height * imgWidthMm) / canvas.width;
+
+    // 한 페이지(297mm)를 초과하는 길이는 여러 페이지로 분할 저장
+    if (imgHeightMm <= pageHeightMm) {
+      const imgData = canvas.toDataURL("image/jpeg", 0.85);
+      pdf.addImage(imgData, "JPEG", 0, 0, imgWidthMm, imgHeightMm);
+      return pdf.output("datauristring").split(",")[1];
+    }
+
+    const pxPerMm = canvas.width / imgWidthMm;
+    const pageHeightPx = Math.floor(pageHeightMm * pxPerMm);
+    let renderedHeightPx = 0;
+    let pageIndex = 0;
+
+    while (renderedHeightPx < canvas.height) {
+      const sliceHeightPx = Math.min(pageHeightPx, canvas.height - renderedHeightPx);
+      const pageCanvas = document.createElement("canvas");
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = sliceHeightPx;
+
+      const ctx = pageCanvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+      ctx.drawImage(
+        canvas,
+        0,
+        renderedHeightPx,
+        canvas.width,
+        sliceHeightPx,
+        0,
+        0,
+        canvas.width,
+        sliceHeightPx
+      );
+
+      const pageImgData = pageCanvas.toDataURL("image/jpeg", 0.85);
+      const sliceHeightMm = (sliceHeightPx * imgWidthMm) / canvas.width;
+
+      if (pageIndex > 0) {
+        pdf.addPage();
+      }
+      pdf.addImage(pageImgData, "JPEG", 0, 0, imgWidthMm, sliceHeightMm);
+
+      renderedHeightPx += sliceHeightPx;
+      pageIndex++;
+    }
 
     return pdf.output("datauristring").split(",")[1];
   }
