@@ -12,6 +12,8 @@
     :root {
       --primary: #2563eb;
       --secondary: #0f766e;
+      --kakao: #fee500;
+      --kakao-text: #191919;
       --danger: #dc2626;
       --bg: #f8fafc;
       --card: #ffffff;
@@ -159,9 +161,25 @@
       resize: vertical;
     }
 
+    .kakao-photo-btn {
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: var(--kakao);
+      color: var(--kakao-text);
+      border: 1px solid #e5ce00;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .kakao-photo-btn:hover { background: #f5dc00; }
+    .kakao-photo-btn:disabled { background: #fef08a; color: #64748b; cursor: not-allowed; }
+
     .save-booth-btn {
       width: 100%;
-      margin-top: 12px;
+      margin-top: 10px;
       padding: 12px 14px;
       background: var(--secondary);
       color: #fff;
@@ -575,6 +593,7 @@
     <textarea id="memoInput" placeholder="X 항목 조치 내용이나 현장 특이사항이 있으면 입력하세요."></textarea>
   </div>
 
+  <button type="button" id="kakaoPhotoBtn" class="kakao-photo-btn" onclick="sendPhotosToKakaoRecipient()">💬 카카오톡 사진 전송</button>
   <button type="button" id="saveBoothBtn" class="save-booth-btn" onclick="saveCurrentBoothResult()">💾 현재 가판점검 결과 저장</button>
 
   <div class="saved-panel">
@@ -611,6 +630,9 @@
 
   // 점검자 성명 고정값
   const INSPECTOR_NAME = "장길종";
+
+  // 카카오톡 사진 전송 대상자
+  const KAKAO_RECIPIENT_NAME = "장길종";
 
   // CGV, HS마켓 추가 발송 수신자 이메일 주소
   const ADDITIONAL_RECIPIENT_EMAIL = "kiljong.jang@samsung.com";
@@ -989,6 +1011,130 @@
       wrap.appendChild(delBtn);
       grid.appendChild(wrap);
     });
+  }
+
+  function collectCurrentPhotos() {
+    const collected = [];
+    for (let qIdx = 0; qIdx < QUESTION_COUNT; qIdx++) {
+      const photos = questionPhotos[qIdx] || [];
+      photos.forEach((dataUrl, pIdx) => {
+        collected.push({
+          qIndex: qIdx,
+          qNo: qIdx + 1,
+          photoNo: pIdx + 1,
+          dataUrl: dataUrl
+        });
+      });
+    }
+    return collected;
+  }
+
+  async function dataUrlToImageFile(dataUrl, fileName) {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    return new File([blob], fileName, { type: blob.type || "image/jpeg" });
+  }
+
+  function triggerDownloadDataUrl(dataUrl, fileName) {
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  async function sendPhotosToKakaoRecipient() {
+    const statusMsg = document.getElementById("statusMsg");
+    const kakaoBtn = document.getElementById("kakaoPhotoBtn");
+    const company = document.getElementById("companyInput").value.trim() || "미지정 업체";
+    const booth = document.getElementById("boothInput").value.trim() || "미지정 가판";
+    const memo = document.getElementById("memoInput").value.trim();
+    const collected = collectCurrentPhotos();
+
+    if (collected.length === 0) {
+      alert("카카오톡으로 전송할 사진이 없습니다. 점검 항목에 사진을 먼저 등록해 주세요.");
+      return;
+    }
+
+    const summaryLines = [
+      "[현장 안전점검 사진 전송]",
+      "받는 분: " + KAKAO_RECIPIENT_NAME,
+      "업체/가판: " + company + " / " + booth,
+      "사진 수량: 총 " + collected.length + "장"
+    ];
+    if (memo) {
+      summaryLines.push("메모: " + memo);
+    }
+    const shareText = summaryLines.join("\n");
+
+    kakaoBtn.disabled = true;
+    statusMsg.style.color = "#0f172a";
+    statusMsg.innerText = KAKAO_RECIPIENT_NAME + "님께 카카오톡 사진 전송을 준비 중입니다...";
+
+    try {
+      const yymmdd = getYYMMDD(new Date());
+      const safeCompany = sanitizeFilePart(company) || "업체";
+      const safeBooth = sanitizeFilePart(booth) || "가판";
+
+      const files = await Promise.all(
+        collected.map((item, idx) =>
+          dataUrlToImageFile(
+            item.dataUrl,
+            yymmdd + "_" + safeCompany + "_" + safeBooth + "_문항" + item.qNo + "_" + (idx + 1) + ".jpg"
+          )
+        )
+      );
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: files })) {
+        await navigator.share({
+          title: KAKAO_RECIPIENT_NAME + " - " + company + " (" + booth + ") 점검 사진",
+          text: shareText,
+          files: files
+        });
+
+        statusMsg.style.color = "#0f766e";
+        statusMsg.innerHTML =
+          "💬 " + escapeHtml(KAKAO_RECIPIENT_NAME) + "님께 카카오톡으로 사진 " + collected.length + "장 공유를 완료했습니다.";
+        return;
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(shareText);
+        } catch (clipErr) {
+          console.warn("클립보드 복사 실패:", clipErr);
+        }
+      }
+
+      collected.forEach((item, idx) => {
+        const dlName = yymmdd + "_" + safeCompany + "_" + safeBooth + "_문항" + item.qNo + "_" + (idx + 1) + ".jpg";
+        triggerDownloadDataUrl(item.dataUrl, dlName);
+      });
+
+      const kakaoShareUrl =
+        "https://sharer.kakao.com/talk/friends/picker/link?url=" +
+        encodeURIComponent(window.location.href) +
+        "&text=" +
+        encodeURIComponent(shareText);
+      window.open(kakaoShareUrl, "_blank", "noopener,noreferrer");
+
+      statusMsg.style.color = "#0f172a";
+      statusMsg.innerHTML =
+        "💬 " + escapeHtml(KAKAO_RECIPIENT_NAME) + "님께 전송할 사진 " + collected.length + "장을 저장하고 카카오톡 공유 창을 열었습니다.<br>" +
+        "<span style='font-size:12.5px; color:#334155;'>카카오톡 대화방에서 저장된 사진을 선택해 " + escapeHtml(KAKAO_RECIPIENT_NAME) + "님께 보내주세요.</span>";
+    } catch (err) {
+      if (err && err.name === "AbortError") {
+        statusMsg.style.color = "#64748b";
+        statusMsg.innerText = "카카오톡 사진 공유가 취소되었습니다.";
+      } else {
+        console.error(err);
+        statusMsg.style.color = "#dc2626";
+        statusMsg.innerText = "❌ 카카오톡 사진 전송 준비 중 오류가 발생했습니다.";
+      }
+    } finally {
+      kakaoBtn.disabled = false;
+    }
   }
 
   function resetCurrentForm() {
