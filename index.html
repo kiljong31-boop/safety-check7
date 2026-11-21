@@ -874,23 +874,6 @@
     return String(str || "").trim().replace(/[\\/:*?"<>|]/g, "_");
   }
 
-  function triggerBase64PdfDownload(base64Str, fileName) {
-    const byteChars = atob(base64Str);
-    const byteNumbers = new Array(byteChars.length);
-    for (let i = 0; i < byteChars.length; i++) {
-      byteNumbers[i] = byteChars.charCodeAt(i);
-    }
-    const blob = new Blob([new Uint8Array(byteNumbers)], { type: "application/pdf" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
-
   async function generateAndSend() {
     const company = document.getElementById("companyInput").value.trim();
     const booth = document.getElementById("boothInput").value.trim();
@@ -997,8 +980,6 @@
         sanitizeFilePart(inspector) +
         ".pdf";
 
-      triggerBase64PdfDownload(pdfBase64, fileName);
-
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
@@ -1015,8 +996,8 @@
 
       statusMsg.style.color = "#16a34a";
       statusMsg.innerHTML =
-        "✅ [" + company + " - " + booth + "] 점검 결과 저장 및 메일 전송 요청이 완료되었습니다!<br>" +
-        "<span style='font-size:12.5px; color:#334155;'>파일명: " + fileName + "</span>";
+        "✅ [" + company + " - " + booth + "] 점검 결과 PDF 생성 및 메일 전송 요청이 완료되었습니다!<br>" +
+        "<span style='font-size:12.5px; color:#334155;'>전송 파일명: " + fileName + "</span>";
     } catch (error) {
       console.error(error);
       statusMsg.style.color = "#dc2626";
