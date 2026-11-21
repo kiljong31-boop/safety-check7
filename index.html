@@ -162,7 +162,6 @@
     .submit-btn:disabled { background: #94a3b8; cursor: not-allowed; }
     #statusMsg { margin-top: 12px; text-align: center; font-size: 14px; font-weight: 600; line-height: 1.5; }
 
-    /* PDF 출력용 숨김 영역 */
     #pdfReport {
       position: fixed; left: -9999px; top: 0;
       width: 794px; padding: 36px 40px; background: #fff; color: #000;
@@ -231,7 +230,6 @@
 <div class="container">
   <h1>📋 일일 안전 점검 리스트</h1>
 
-  <!-- 1. 업체명 / 가판명 (점검자 성명 위 배치, 리스트 선택 + 검색 + 직접 입력) -->
   <div class="meta-grid">
     <div class="meta-group combo-wrap" style="margin-bottom: 0;" id="companyComboWrap">
       <label for="companyInput">점검 업체</label>
@@ -268,13 +266,11 @@
     </div>
   </div>
 
-  <!-- 2. 점검자 성명 -->
   <div class="meta-group">
     <label for="inspectorName">점검자 성명</label>
     <input type="text" id="inspectorName" name="inspectorName" placeholder="이름을 입력하세요" />
   </div>
 
-  <!-- 10개 점검 항목 HTML 직접 고정 (문항별 사진 최대 5장) -->
   <div id="questionsContainer">
     <div class="question-item">
       <div class="question-top">
@@ -466,7 +462,6 @@
   <div id="statusMsg"></div>
 </div>
 
-<!-- PDF 변환용 템플릿 -->
 <div id="pdfReport">
   <h2>일일 안전 점검 결과 보고서</h2>
   <div class="pdf-info-box">
@@ -496,13 +491,11 @@
 </div>
 
 <script>
-  // ★ 본인의 Google Apps Script 웹 앱 URL을 아래 따옴표 안에 붙여넣으세요 ★
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxa0p65su0_Z6wc90yVtDxTw_fvgg6m7idxGBlGahlcFnJAnW4kpYZZorzcHkt-fBvj/exec";
 
   const MAX_PHOTOS_PER_QUESTION = 5;
   const QUESTION_COUNT = 10;
 
-  // 업체별 지정 및 기존 가판명 리스트 (1~34번)[cite: 1]
   const INSPECTION_TARGETS = [
     { no: 1, company: "BBQ", booth: "BBQ(스카이크루즈)" },
     { no: 2, company: "CGV", booth: "모노브레드(공연장)" },
@@ -1034,8 +1027,16 @@
     }
   }
 
-  renderCompanyDropdown("", true);
-  renderBoothDropdown("", true);
+  function initCombos() {
+    renderCompanyDropdown("", true);
+    renderBoothDropdown("", true);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCombos);
+  } else {
+    initCombos();
+  }
 </script>
 
 </body>
