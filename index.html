@@ -611,6 +611,22 @@
   // 점검자 성명 고정값
   const INSPECTOR_NAME = "장길종";
 
+  // 업체별 지정 수신 이메일 주소
+  const COMPANY_EMAILS = {
+    "CGV": "kiljong.jang@samsung.com",
+    "HS마켓": "kiljong.jang@samsung.com"
+  };
+
+  function getRecipientEmailForCompany(companyName) {
+    const target = String(companyName || "").trim();
+    if (!target) return "";
+    if (COMPANY_EMAILS[target]) return COMPANY_EMAILS[target];
+    const matchedKey = Object.keys(COMPANY_EMAILS).find(
+      key => key.toLowerCase() === target.toLowerCase()
+    );
+    return matchedKey ? COMPANY_EMAILS[matchedKey] : "";
+  }
+
   const MAX_PHOTOS_PER_QUESTION = 5;
   const QUESTION_COUNT = 10;
 
@@ -1108,8 +1124,9 @@
 
       const titleEl = document.createElement("div");
       titleEl.className = "saved-company-title";
+      const customEmail = getRecipientEmailForCompany(companyName);
       titleEl.innerHTML =
-        "<span>🏢 " + escapeHtml(companyName) + "</span>" +
+        "<span>🏢 " + escapeHtml(companyName) + (customEmail ? " <span style='font-size:11px; color:#0f766e;'>(" + escapeHtml(customEmail) + ")</span>" : "") + "</span>" +
         "<span style='font-size:11.5px; color:#475569;'>" + entries.length + "개 가판 PDF</span>";
       groupEl.appendChild(titleEl);
 
@@ -1454,6 +1471,8 @@
 
       for (let i = 0; i < companyEntries.length; i++) {
         const [companyName, boothList] = companyEntries[i];
+        const recipientEmail = getRecipientEmailForCompany(companyName);
+
         statusMsg.innerText =
           "업체별 PDF 생성 및 메일 발송 중 (" + (i + 1) + " / " + companyEntries.length + "): " + companyName + "...";
 
@@ -1469,6 +1488,9 @@
         await sendCompanyEmailPayload({
           inspector: INSPECTOR_NAME,
           company: companyName,
+          email: recipientEmail,
+          recipientEmail: recipientEmail,
+          to: recipientEmail,
           booth: boothNames.join(", "),
           booths: boothNames,
           boothCount: boothList.length,
